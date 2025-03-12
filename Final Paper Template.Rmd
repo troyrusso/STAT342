@@ -39,6 +39,17 @@ Describe the statistical model used.
 ## Likelihood Inference
 Detail the likelihood approach.
 
+#likihood function:
+
+#MLE
+
+#Confidence Interval for Phi
+
+  #Large sample confidence interval
+  
+  #Bootstrap
+  
+
 ## Bayesian Inference
 Detail the Bayesian approach.
 
