@@ -49,6 +49,29 @@ Detail the likelihood approach.
   
   #Bootstrap
   
+```{r, echo= false}
+B= 100
+set.seed(123)
+n <- 160
+boot_df <- replicate ( n = B, expr= (rbinom(n = 1,size = n, prob = 8/170)))
+boot_df
+
+psi <- numeric(B)
+for (i in 1:B){
+  Tvar <- boot_df[i]
+  psi[i] <- ((n-(2*Tvar)) / (n-Tvar) )
+}                       
+        
+mean(psi)
+psi
+
+result <- quantile(psi, probs = c(0.025, 0.975))
+
+# Print the result
+print(result)
+
+```
+  
 
 ## Bayesian Inference
 Detail the Bayesian approach.
