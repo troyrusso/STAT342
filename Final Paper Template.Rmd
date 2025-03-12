@@ -39,8 +39,102 @@ Describe the statistical model used.
 ## Likelihood Inference
 Detail the likelihood approach.
 
+#likihood function:
+
+#MLE
+
+#Confidence Interval for Phi
+
+  #Large sample confidence interval
+  
+  #Bootstrap
+  
+```{r, echo= false}
+B= 100
+set.seed(123)
+n <- 160
+boot_df <- replicate ( n = B, expr= (rbinom(n = 1,size = n, prob = 8/170)))
+boot_df
+
+psi <- numeric(B)
+for (i in 1:B){
+  Tvar <- boot_df[i]
+  psi[i] <- ((n-(2*Tvar)) / (n-Tvar) )
+}                       
+        
+mean(psi)
+psi
+
+result <- quantile(psi, probs = c(0.025, 0.975))
+
+# Print the result
+print(result)
+
+```
+  
+
 ## Bayesian Inference
 Detail the Bayesian approach.
+
+#beta binomial model
+$T_{\pi} \sim Binom(170,\pi)$
+$g(\pi) = Beta(a,b)$
+
+$P(\psi\geq 0.3) = P(\frac{1-2\pi}{1-\pi} \geq 0.3)$
+$=P(\pi \leq \frac{7}{17})$
+$=\frac{7}{17}$
+
+#priors
+We will use the following priors
+
+experimental prior
+$P(\psi \geq 0.3) = 0.700102$
+$P(\psi \geq 0) = 1$
+
+0.05 prior
+$P(\psi \geq 0.3) = 0.05$
+$P(\psi \geq 0) = 0.5$
+
+0.01 prior
+$P(\psi \geq 0.3) = 0.01$
+$P(\psi \geq 0) = 0.5$
+
+The experimental prior is the prior that Pfizer used in their study, which gives the vaccine the best chance of passing the tests. The following two priors have a decreasing chance of passing the tests.
+
+We can visualize how much more likely their prior is than ours
+```{r}
+
+```
+
+
+#betas
+
+```{r, echo = false}
+library(LearnBayes)
+prior1Beta <- beta.select(quantile1 = list(p=0.05, x = 7/17),
+            quantile2 = list(p = 0.5, x = 0.5))
+prior2Beta <- beta.select(quantile1 = list(p=0.01, x = 7/17),
+            quantile2 = list(p = 0.5, x = 0.5))
+```
+
+The Pfizer study used $Beta(0.700102,1)$ as their prior Betas.
+We will be trying $Beta($`r round(prior1Beta,4)`$)$ and $Beta($`r round(prior2Beta,4)`$)$ as our prior Beta values.
+So, the posterior distributions are as follows:
+Pfizer: $h(\pi|t) = Beta($ `r 0.700102 + 8`, `r 162+0.700102`$)$
+0.05 posterior: $h(\pi|t) = Beta($ `r round(prior1Beta[1],4) + 8`, `r 162+round(prior1Beta[1],4)`$)$
+0.01 posterior: $h(\pi|t) = Beta($ `r round(prior2Beta[1],4) + 8`, `r 162+round(prior2Beta[1],4)`$)$
+
+summarizing the posterior distribution of $\pi$
+
+```{r}
+posterior_median_pi <- qbeta(0.5, shape1 = 43.04 + 104, shape2 = 293 - 104 + 43.04 )
+cat("posterior median", round(posterior_median_pi, 4))
+qbeta(p = c(0.025, 0.975), shape1 = 43.04 + 104, shape2 = 293 - 104 + 43.04)
+library(HDInterval)
+hdi(qbeta, credMass=0.95, shape1 = 43.04 + 104,
+shape2 = 293 - 104 + 43.04 )
+
+```
 
 # Results
 Present your findings. 
