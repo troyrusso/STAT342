@@ -158,6 +158,13 @@ Smith, A., & Johnson, C. (2023). *Title of the Online Article*. Retrieved from h
 ```{r ref.label = "important_R_code", eval=FALSE}
 ```
 
+```{r ref.label = "psi_dist", eval=FALSE }
+psi_dist <- function(x, shape1, shape2){
+  pi <- (x-1)/(x-2)
+  return(dbeta(x = pi, shape1 = shape1, shape2 = shape2))
+}
+```
+
 ## Proofs
 If applicable, include detailed mathematical derivations or additional theoretical explanations.
 
