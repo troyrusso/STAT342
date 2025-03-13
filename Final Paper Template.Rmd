@@ -168,7 +168,7 @@ psi_dist <- function(x, shape1, shape2){
 ## Proofs
 If applicable, include detailed mathematical derivations or additional theoretical explanations.
 
-Proof of the Maximum Likelihood Estimator for $\widehat{\psi}_0^{mle}$
+Proof of the Maximum Likelihood Estimator for $\widehat{\psi}_0^{mle}$:
 
 We can begin with the Likelihood function. Recall that the design of our experiment is binomial; we observe 170 infections and try to make inference on $\pi$, the proportion of infections from those who have the vaccine. Assuming each observation is independent (which is necessary for a binomial model), we can write our likelihood function in terms of $\pi$:
 $$L(\pi) = \binom{170}{x}(\pi)^x(1-\pi)^{170-x}$$
@@ -180,4 +180,14 @@ In order to write our Likelihood function in terms of $\psi$, we can rewrite $\p
 $$\pi = \frac{\psi - 1}{\psi -2}$$
 Now we rewrite our likelihood function.
 $$L^*(\psi) = \binom{170}{8}\left(\frac{\psi-1}{\psi-2}\right)^8\left(\frac{-1}{\psi-2}\right)^{162}$$
-Now that we have written our full likelihood function in terms of $\psi$, we can 
+Now that we have written our full likelihood function in terms of $\psi$, we can write the log likelihood function.
+$$\ell^*(\psi) = \log\binom{170}{8}+8\log(\psi-1)-8\log(\psi-2)-162\log(\psi-2) +162\log(-1)$$
+We have $162\log(-1) = \log((-1)^{162}) = \log(1) = 0$:
+$$\ell^*(\psi) =  \log\binom{170}{8}+8\log(\psi-1)-170\log(\psi-2)$$
+To maximize this equation, we take its derivative with respect to $\psi$:
+$$\frac{d}{d\psi}\ell^*(\psi) = \frac{8}{\psi-1} - \frac{170}{\psi-2}$$
+Setting this derivative finds the maximum:
+$$0 = \frac{8}{\hat{\psi}_0^{mle} - 1} - \frac{170}{\hat{\psi}_0^{mle}-2}$$
+$$\frac{170}{\hat{\psi}_0^{mle}-2} = \frac{8}{\hat{\psi}_0^{mle}-1}$$
+$$170\hat{\psi}_0^{mle} - 170 = 8\hat{\psi}_0^{mle} - 16$$
+$$\hat{\psi}_0^{mle} = \frac{154}{162}$$
