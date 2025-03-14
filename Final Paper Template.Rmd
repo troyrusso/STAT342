@@ -23,6 +23,13 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r label = "psi_dist", echo = FALSE}
+psi_dist <- function(x, shape1, shape2){
+  pi <- (x-1)/(x-2)
+  return(dbeta(x = pi, shape1 = shape1, shape2 = shape2))
+}
+```
+
 # Abstract
 Write your abstract here.
 
@@ -98,14 +105,31 @@ Detail the likelihood approach.
 
 #MLE
 
-#Confidence Interval for Phi
+#Confidence Interval for Psi
 
   #Large sample confidence interval
   
   #Bootstrap
   
+  We will also use a computational approach to find our $\hat\psi_{MLE}$ interval by bootstrapping our $\hat\pi$. We will randomly draw with replacement many times from a $Binomial(n, \pi_{observed})$ distribution. We will then calculate a value of $\hat\psi_i$ for each $\hat\pi_i$ from our bootstrap. We will then a construct a 95% confidence interval by calculating the 2.5th and 97.5th percentile of our $\hat\psi$s
+  
+  
+
+## Bayesian Inference
+Detail the Bayesian approach.
+
+
+
+# Results
+Present your findings. 
+
+
+
+
+Our bootstrap 95% confidence interval is:
+
 ```{r, echo= FALSE}
-B= 100
+B= 1000
 set.seed(123)
 n <- 160
 boot_df <- replicate ( n = B, expr= (rbinom(n = 1,size = n, prob = 8/170)))
@@ -121,15 +145,9 @@ result <- quantile(psi, probs = c(0.025, 0.975))
 print(result)
 
 ```
-  
 
-## Bayesian Inference
-Detail the Bayesian approach.
+We will use a beta binomial model:
 
-
-# Results
-Present your findings.
-#beta binomial model
 $T_{\pi} \sim Binom(170,\pi)$
 $g(\pi) = Beta(a,b)$
 
@@ -137,8 +155,8 @@ $P(\psi\geq 0.3) = P(\frac{1-2\pi}{1-\pi} \geq 0.3)$
 $=P(\pi \leq \frac{7}{17})$
 $=\frac{7}{17}$
 
-#priors
-We will use the following priors
+
+for our model we will use the following priors
 
 experimental prior
 $P(\psi \geq 0.3) \approx 0.57$
@@ -154,9 +172,6 @@ $P(\psi \geq 0) = 0.5$
 
 The experimental prior is the prior that Pfizer used in their study, which gives the vaccine the best chance of passing the tests. The following two priors have a decreasing chance of passing the tests.
 
-
-
-#betas
 
 ```{r, echo = FALSE}
 library(LearnBayes)
@@ -174,15 +189,15 @@ We can visualize how much more likely their prior is than ours
 ```{r, echo = FALSE}
 
 ggplot() +
-geom_function(fun = dbeta,
+geom_function(fun = psi_dist,
 mapping = aes(color = "Pfizer"),
 args = list(shape1 = 0.700102, shape2 = 1),
 xlim = c(0,1)) +
-geom_function(fun = dbeta,
+geom_function(fun = psi_dist,
 mapping = aes(color = "prior1"),
 args = list(shape1 = 43.04, shape2 = 43.04),
 xlim=c(0,1)) +
-geom_function(fun = dbeta,
+geom_function(fun = psi_dist,
 mapping = aes(color = "prior2"),
 args = list(shape1 = 85.63, shape2 = 85.63),
 xlim=c(0,1)) +
@@ -200,30 +215,30 @@ Pfizer: $h(\pi|t) = Beta($ `r 0.700102 + 8`, `r 162+1`$)$
 
 We can visualize the comparison between all of the priors and posteriors:
 
-```{r}
+```{r, echo = FALSE}
 
 ggplot() +
-geom_function(fun = dbeta,
+geom_function(fun = psi_dist,
 mapping = aes(color = "Pfizer"),
 args = list(shape1 = 0.700102, shape2 = 1),
 xlim = c(0,1)) +
-geom_function(fun = dbeta,
+geom_function(fun = psi_dist,
 mapping = aes(color = "Pfizer"),
 args = list(shape1 = 0.700102 + 8, shape2 = 162 + 1),
 xlim=c(0,1)) +
-geom_function(fun = dbeta,
+geom_function(fun = psi_dist,
 mapping = aes(color = "0.05"),
 args = list(shape1 = 43.04, shape2 = 43.04),
 xlim = c(0,1)) +
-geom_function(fun = dbeta,
+geom_function(fun = psi_dist,
 mapping = aes(color = "0.05"),
 args = list(shape1 = 43.04 + 8, shape2 = 162 + 43.04),
 xlim=c(0,1)) +
-geom_function(fun = dbeta,
+geom_function(fun = psi_dist,
 mapping = aes(color = "0.01"),
 args = list(shape1 = 85.63, shape2 = 85.63),
 xlim = c(0,1)) +
-geom_function(fun = dbeta,
+geom_function(fun = psi_dist,
 mapping = aes(color = "0.01"),
 args = list(shape1 = 85.63 + 8, shape2 = 162 + 85.63),
 xlim=c(0,1)) +
@@ -239,7 +254,7 @@ y = "PDF")
 
 summarizing the posterior distribution of $\pi$
 
-```{r, echo = FALSE, eval = FALSE}
+```{r, echo = FALSE}
 # Pfizer Posterior
 pfizer_shape1 <- 0.700102 + 8
 pfizer_shape2 <- 162 + 1
@@ -269,7 +284,6 @@ cat("95% CI for 0.01 prior: [", round(prior2_ci[1], 4), ",", round(prior2_ci[2],
 
 
 ```
-Now we can do some confidence tests to see the significance of our estimates.
   
 ## Significance Tests and Posterior Distributions
 
@@ -280,12 +294,14 @@ $$
 \text{Beta}\Bigl(\text{Prior 2: } \text{Beta}\Bigl(`r round(prior2Beta[1],4)`,\, `r round(prior2Beta[1],4)`\Bigr) \Bigr).
 $$
 
-Given the data (with 8 successes and 162 failures), the posterior distributions are updated as follows:
+Given the data (with 8 successes and 162 failures), the posterior distributions are as follows:
+  
 
 - **Pfizer Posterior:**
 $$
 h(\pi\mid t) = \text{Beta}\Bigl(0.700102 + 8,\, 162 + 1\Bigr)
 $$
+  
 
 - **0.05 Prior Posterior:**
 $$
@@ -296,6 +312,7 @@ $$
 $$
 h(\pi\mid t) = \text{Beta}\Bigl(`r round(prior2Beta[1],4)` + 8,\, 162 + `r round(prior2Beta[1],4)`\Bigr)
 $$
+  
 
 Below we compute the posterior medians and approximate 95\% credible intervals (using the 2.5th and 97.5th percentiles):
 
@@ -330,24 +347,24 @@ p\text{-value} = 1 - F(0.5),
 \]
 where \(F(\beta)\) is the cumulative distribution function of the corresponding Beta posterior.
 
-\textbf{Pfizer Posterior:}
+\text{Pfizer Posterior:}
 \[
 p\text{-value} \approx `r round(1 - pbeta(0.5, 0.700102 + 8, 162 + 1), 4)`.
 \]
 
-\textbf{0.05 Prior Posterior:}
+\text{0.05 Prior Posterior:}
 \[
 p\text{-value} \approx `r round(1 - pbeta(0.5, prior1Beta[1] + 8, 162 + prior1Beta[1]), 4)`.
 \]
 
-\textbf{0.01 Prior Posterior:}
+\text{0.01 Prior Posterior:}
 \[
 p\text{-value} \approx `r round(1 - pbeta(0.5, prior2Beta[1] + 8, 162 + prior2Beta[1]), 4)`.
 \]
 
 
 
- 
+
 
 # Discussion / Conclusion
 Discuss / conclude here.
@@ -373,6 +390,43 @@ psi_dist <- function(x, shape1, shape2){
   pi <- (x-1)/(x-2)
   return(dbeta(x = pi, shape1 = shape1, shape2 = shape2))
 }
+```
+
+## Plots
+```{r, echo = FALSE}
+
+ggplot() +
+geom_function(fun = dbeta,
+mapping = aes(color = "Pfizer"),
+args = list(shape1 = 0.700102, shape2 = 1),
+xlim = c(0,1)) +
+geom_function(fun = dbeta,
+mapping = aes(color = "Pfizer"),
+args = list(shape1 = 0.700102 + 8, shape2 = 162 + 1),
+xlim=c(0,1)) +
+geom_function(fun = dbeta,
+mapping = aes(color = "0.05"),
+args = list(shape1 = 43.04, shape2 = 43.04),
+xlim = c(0,1)) +
+geom_function(fun = dbeta,
+mapping = aes(color = "0.05"),
+args = list(shape1 = 43.04 + 8, shape2 = 162 + 43.04),
+xlim=c(0,1)) +
+geom_function(fun = dbeta,
+mapping = aes(color = "0.01"),
+args = list(shape1 = 85.63, shape2 = 85.63),
+xlim = c(0,1)) +
+geom_function(fun = dbeta,
+mapping = aes(color = "0.01"),
+args = list(shape1 = 85.63 + 8, shape2 = 162 + 85.63),
+xlim=c(0,1)) +
+scale_color_manual(name = "dist", 
+                   values = c("Pfizer" = "blue", "0.05" = "red", "0.01" = "black"))+
+labs(title = "Priors and Posteriors",
+x=expression(pi),
+y = "PDF")
+
+
 ```
 
 ## Proofs
