@@ -378,13 +378,15 @@ Discuss / conclude here.
 
 # Bibliography
 
-Brown, B. (2024). *Lecture Title*. Lecture slides, Course Name, University Name.
+Baden, L.R., et al. (2021). \textit{N. Engl. J. Med.}, 384(5), 403–416.
 
-Doe, J. (2020). Title of the Paper. *Journal Name*, 12(3), 45-67.
+Berry, D.A. (2006). \textit{Nature}, 440(7088), 1078–1083.
 
-Last, F., & Last, F. (2025). *Book Title*. Publisher.
+U.S. Food \& Drug Administration (2020). Emergency Use Authorization for Pfizer-BioNTech COVID-19 Vaccine.
 
-Smith, A., & Johnson, C. (2023). *Title of the Online Article*. Retrieved from https://www.example.com.
+Polack, F.P., et al. (2020). \textit{N. Engl. J. Med.}, 383(27), 2603–2615.
+
+Wasserstein, R.L., et al. (2019). \textit{Am. Stat.}, 73(sup1), 1–19.
 
 # Appendix
 
