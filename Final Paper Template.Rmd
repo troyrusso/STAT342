@@ -14,6 +14,8 @@ fontsize: 11pt
 #Use this code chunk to include libraries, and set global options.
 library(ggplot2)
 library(HDInterval)
+library(dplyr)
+library(binom)
 knitr::opts_chunk$set(
   echo = FALSE,      # show code in the output
   warning = FALSE,  # hide warnings
@@ -36,6 +38,52 @@ Provide an introduction with background information.
 
 ```{r label="important_R_code", eval=TRUE, echo=FALSE}
 # You can reference your code in the appendix (sample here).
+```
+
+```{r}
+# Summary data from the paper:
+# For participants without evidence of infection:
+# Group       Cases    SampleSize
+# BNT162b2      8       17,411
+# Placebo     162       17,511
+
+data <- data.frame(
+  Group = c("BNT162b2", "Placebo"),
+  Cases = c(8, 162),
+  SampleSize = c(17411, 17511)
+)
+
+# Calculate incidence rate per 1000 participants:
+data <- data %>%
+  mutate(IncidenceRate = Cases / SampleSize * 1000)
+
+# Calculate exact binomial 95% confidence intervals for the incidence rates
+ci <- binom.confint(data$Cases, data$SampleSize, methods = "exact")
+data$Lower <- ci$lower * 1000
+data$Upper <- ci$upper * 1000
+
+# Create the bar plot
+ggplot(data, aes(x = Group, y = IncidenceRate, fill = Group)) +
+  geom_bar(stat = "identity", width = 0.6) +
+  geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0.2) +
+  labs(title = "Incidence Rate of Covid-19 Cases (per 1000 participants)",
+       y = "Incidence Rate (per 1000)",
+       x = "Group") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+```{r}
+# Calculate attack rates:
+attack_rate_vaccine <- 8 / 17411
+attack_rate_placebo <- 162 / 17511
+
+# Vaccine efficacy (VE) is defined as 1 - (attack rate in vaccine group) / (attack rate in placebo group)
+VE <- 1 - attack_rate_vaccine / attack_rate_placebo
+VE_percent <- round(VE * 100, 2)
+
+cat("Estimated Vaccine Efficacy (VE):", VE_percent, "%\n")
+
 ```
 
 # Statistical Methods
