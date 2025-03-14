@@ -29,7 +29,7 @@ Write your abstract here.
 ***TESTTTING****
 
 # Keywords
-*Keyword 1*, *Keyword 2*, *Keyword 3*, *Keyword 4*
+*Maximum Likelihood Estimation*, *Bayesian Beta-Binomial Model*, *Parametric Bootstrap*, *Likelihood Ratio Test*
 
 \newpage
 
