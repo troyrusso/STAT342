@@ -117,6 +117,30 @@ Detail the likelihood approach.
 
 ## Bayesian Inference
 Detail the Bayesian approach.
+We will use a beta binomial model:
+
+$T_{\pi} \sim Binom(170,\pi)$
+$g(\pi) = Beta(a,b)$
+
+$P(\psi\geq 0.3) = P(\frac{1-2\pi}{1-\pi} \geq 0.3)$
+$=P(\pi \leq \frac{7}{17})$
+$=\frac{7}{17}$
+
+for our model we will use the following priors: 
+
+experimental prior
+$P(\psi \geq 0.3) \approx 0.57$
+$P(\psi \geq 0) = 1$
+
+0.05 prior
+$P(\psi \geq 0.3) = 0.05$
+$P(\psi \geq 0) = 0.5$
+
+0.01 prior
+$P(\psi \geq 0.3) = 0.01$
+$P(\psi \geq 0) = 0.5$
+
+The experimental prior is the prior that Pfizer used in their study, which gives the vaccine the best chance of passing the tests. The following two priors have a decreasing chance of passing the tests.
 
 
 
@@ -146,31 +170,10 @@ print(result)
 
 ```
 
-We will use a beta binomial model:
 
-$T_{\pi} \sim Binom(170,\pi)$
-$g(\pi) = Beta(a,b)$
-
-$P(\psi\geq 0.3) = P(\frac{1-2\pi}{1-\pi} \geq 0.3)$
-$=P(\pi \leq \frac{7}{17})$
-$=\frac{7}{17}$
+#Baysian Approach
 
 
-for our model we will use the following priors
-
-experimental prior
-$P(\psi \geq 0.3) \approx 0.57$
-$P(\psi \geq 0) = 1$
-
-0.05 prior
-$P(\psi \geq 0.3) = 0.05$
-$P(\psi \geq 0) = 0.5$
-
-0.01 prior
-$P(\psi \geq 0.3) = 0.01$
-$P(\psi \geq 0) = 0.5$
-
-The experimental prior is the prior that Pfizer used in their study, which gives the vaccine the best chance of passing the tests. The following two priors have a decreasing chance of passing the tests.
 
 
 ```{r, echo = FALSE}
