@@ -401,3 +401,39 @@ $$0 = \frac{8}{\hat{\psi}_0^{mle} - 1} - \frac{170}{\hat{\psi}_0^{mle}-2}$$
 $$\frac{170}{\hat{\psi}_0^{mle}-2} = \frac{8}{\hat{\psi}_0^{mle}-1}$$
 $$170\hat{\psi}_0^{mle} - 170 = 8\hat{\psi}_0^{mle} - 16$$
 $$\hat{\psi}_0^{mle} = \frac{154}{162}$$
+
+The Fisher information is the negative expectation of the second derivative of the log-likelihood. So for $X \sim \text{Binomial}(n, \pi)$,
+
+\[
+I(\psi) = \mathbb{E}\left[-\frac{d^2\ell}{d\psi^2}\right] = \frac{\mathbb{E}[X]}{(1 - \psi)^2} - \frac{n}{(2 - \psi)^2}.
+\]
+
+Substituting $\mathbb{E}[X] = n\pi = n \cdot \frac{1 - \psi}{2 - \psi}$,
+
+\[
+I(\psi) = \frac{n(1 - \psi)}{(2 - \psi)(1 - \psi)^2} - \frac{n}{(2 - \psi)^2} = \frac{n}{(2 - \psi)(1 - \psi)} - \frac{n}{(2 - \psi)^2}.
+\]
+
+Factoring out $\frac{n}{2 - \psi}$,
+
+\[
+I(\psi) = \frac{n}{2 - \psi} \left(\frac{1}{1 - \psi} - \frac{1}{2 - \psi}\right).
+\]
+
+Combining terms with a common denominator,
+
+\[
+I(\psi) = \frac{n}{2 - \psi} \cdot \frac{(2 - \psi) - (1 - \psi)}{(1 - \psi)(2 - \psi)} = \frac{n}{(1 - \psi)(2 - \psi)^2}.
+\]
+
+So we get 
+\[
+I(\psi) = \frac{n}{(1 - \psi)(2 - \psi)^2}.
+\]
+
+We know that \[
+\widehat{SE} = \frac{1}{\sqrt{n I(\hat{\psi})}}
+\]
+
+and that our large sample confidence interval is given by \[
+\hat{\psi}^{mle} \pm z_{\alpha/2}\cdot \widehat{SE}\]
