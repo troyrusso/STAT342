@@ -34,7 +34,31 @@ Write your abstract here.
 \newpage
 
 # Introduction / Background
-Provide an introduction with background information.
+\section*{Introduction}
+The COVID-19 pandemic, caused by the coronavirus SARS-CoV-2, has had a massive global impact since it first emerged in late 2019, affecting health, economies, and daily life worldwide. Developing safe and effective vaccines quickly became crucial to help curb the spread and reduce severe illness. One of the earliest breakthroughs was the mRNA-based BNT162b2 vaccine from Pfizer and BioNTech, which showed impressive efficacy in clinical trials (Polack et al., 2021). By December 2020, the U.S. Food and Drug Administration (FDA) granted Emergency Use Authorization (EUA) for BNT162b2 (FDA, 2020)—a major turning point in fighting the pandemic. This authorization was supported by data from a phase 2/3 randomized, placebo-controlled trial involving over 34,000 participants, which reported a 95\% vaccine efficacy (VE) against symptomatic COVID-19 (Polack et al., 2021).
+
+Vaccine efficacy trials rely on rigorous statistical frameworks to evaluate the reduction in disease risk between vaccinated and unvaccinated groups. Traditional frequentist methods, such as confidence intervals and p-values, have long dominated clinical trial analyses. However, Bayesian approaches are increasingly employed for their ability to incorporate prior evidence and provide probabilistic interpretations of efficacy (Berry et al., 2006). The original BNT162b2 trial used a Bayesian beta-binomial model with a Beta(0.700102, 1) prior to estimate VE, defined as 
+
+\begin{equation}
+\psi = \frac{1-2\pi}{1-\pi}
+\end{equation}
+where \(\pi\) represents the probability of infection in the vaccine group relative to placebo (Polack, et al., 2021). This analysis yielded a posterior median VE of 95\% (95\% credible interval: 90.3--97.6\%) and a $>$99.99\% posterior probability that VE exceeded 30\%. These results aligned with findings from other mRNA vaccines like Moderna's mRNA-1273 (Baden et al., 2021).
+
+Despite the strong evidence presented by the original Bayesian analysis, comparing Bayesian and frequentist methodologies offers unique insights. Frequentist methods, which avoid prior distributions and focus on long-run frequency, remain the regulatory standard for many trials (FDA, 2020). A double analysis could strengthen our confidence in the results by examining similarities and differences between the two frameworks, particularly in estimating uncertainty intervals. For instance, while Bayesian credible intervals reflect posterior probability, frequentist confidence intervals rely on repeated sampling interpretations---a distinction with practical implications for interpretation (Wasserstein at al., 2019).
+
+WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!! WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!
+
+The present study reanalyzes these data Table 1 using both Bayesian and frequentist approaches. The primary goals are to: (1) estimate VE and associated uncertainty under each framework, (2) compare the resulting efficacy point and interval estimates, and (3) evaluate the posterior probability (Bayesian) and p-values (frequentist) for the hypothesis that VE exceeds 30\%. Our hypotheses are as follows:
+\\
+
+\noindent\textbf{Hypotheses:}
+\begin{itemize}
+\item Both frameworks will confirm high VE ($>$90\%) for BNT162b2
+\item Uncertainty intervals will differ modestly between methods
+\item Both analyses will reject the null hypothesis (VE $\leq$ 30\%) with overwhelming evidence
+\end{itemize}
+
+This comparative analysis not only reinforces confidence in BNT162b2's efficacy but also highlights the complementary strengths of Bayesian and frequentist statistics in public health research.
 
 ```{r label="important_R_code", eval=TRUE, echo=FALSE}
 # You can reference your code in the appendix (sample here).
