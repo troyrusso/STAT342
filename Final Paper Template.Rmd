@@ -126,6 +126,9 @@ print(result)
 ## Bayesian Inference
 Detail the Bayesian approach.
 
+
+# Results
+Present your findings.
 #beta binomial model
 $T_{\pi} \sim Binom(170,\pi)$
 $g(\pi) = Beta(a,b)$
@@ -344,8 +347,7 @@ p\text{-value} \approx `r round(1 - pbeta(0.5, prior2Beta[1] + 8, 162 + prior2Be
 
 
 
-# Results
-Present your findings. 
+ 
 
 # Discussion / Conclusion
 Discuss / conclude here.
