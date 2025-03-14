@@ -10,8 +10,15 @@ header-includes:
 fontsize: 11pt
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, warning=FALSE, echo = FALSE}
 #Use this code chunk to include libraries, and set global options.
+library(ggplot2)
+library(HDInterval)
+knitr::opts_chunk$set(
+  echo = FALSE,      # show code in the output
+  warning = FALSE,  # hide warnings
+  message = FALSE   # hide messages
+)
 ```
 
 # Abstract
@@ -54,16 +61,11 @@ B= 100
 set.seed(123)
 n <- 160
 boot_df <- replicate ( n = B, expr= (rbinom(n = 1,size = n, prob = 8/170)))
-boot_df
-
 psi <- numeric(B)
 for (i in 1:B){
   Tvar <- boot_df[i]
   psi[i] <- ((n-(2*Tvar)) / (n-Tvar) )
 }                       
-        
-mean(psi)
-psi
 
 result <- quantile(psi, probs = c(0.025, 0.975))
 
@@ -88,7 +90,7 @@ $=\frac{7}{17}$
 We will use the following priors
 
 experimental prior
-$P(\psi \geq 0.3) = 0.700102$
+$P(\psi \geq 0.3) \approx 0.57$
 $P(\psi \geq 0) = 1$
 
 0.05 prior
@@ -101,10 +103,6 @@ $P(\psi \geq 0) = 0.5$
 
 The experimental prior is the prior that Pfizer used in their study, which gives the vaccine the best chance of passing the tests. The following two priors have a decreasing chance of passing the tests.
 
-We can visualize how much more likely their prior is than ours
-```{r}
-
-```
 
 
 #betas
@@ -119,22 +117,184 @@ prior2Beta <- beta.select(quantile1 = list(p=0.01, x = 7/17),
 
 The Pfizer study used $Beta(0.700102,1)$ as their prior Betas.
 We will be trying $Beta($`r round(prior1Beta,4)`$)$ and $Beta($`r round(prior2Beta,4)`$)$ as our prior Beta values.
+
+We can visualize how much more likely their prior is than ours
+  
+```{r, echo = FALSE}
+
+ggplot() +
+geom_function(fun = dbeta,
+mapping = aes(color = "Pfizer"),
+args = list(shape1 = 0.700102, shape2 = 1),
+xlim = c(0,1)) +
+geom_function(fun = dbeta,
+mapping = aes(color = "prior1"),
+args = list(shape1 = 43.04, shape2 = 43.04),
+xlim=c(0,1)) +
+geom_function(fun = dbeta,
+mapping = aes(color = "prior2"),
+args = list(shape1 = 85.63, shape2 = 85.63),
+xlim=c(0,1)) +
+scale_color_manual(name = "dist", 
+                   values = c("Pfizer" = "blue", "prior1" = "red", "prior2" = "black"))+
+labs(title = "Prior of experiment and new pirors",
+x=expression(pi),
+y = "PDF")
+```
+
 So, the posterior distributions are as follows:
-Pfizer: $h(\pi|t) = Beta($ `r 0.700102 + 8`, `r 162+0.700102`$)$
+Pfizer: $h(\pi|t) = Beta($ `r 0.700102 + 8`, `r 162+1`$)$
 0.05 posterior: $h(\pi|t) = Beta($ `r round(prior1Beta[1],4) + 8`, `r 162+round(prior1Beta[1],4)`$)$
 0.01 posterior: $h(\pi|t) = Beta($ `r round(prior2Beta[1],4) + 8`, `r 162+round(prior2Beta[1],4)`$)$
 
-summarizing the posterior distribution of $\pi$
+We can visualize the comparison between all of the priors and posteriors:
 
-```{r, echo = FALSE}
-posterior_median_pi <- qbeta(0.5, shape1 = 43.04 + 104, shape2 = 293 - 104 + 43.04 )
-cat("posterior median", round(posterior_median_pi, 4))
-qbeta(p = c(0.025, 0.975), shape1 = 43.04 + 104, shape2 = 293 - 104 + 43.04)
-library(HDInterval)
-hdi(qbeta, credMass=0.95, shape1 = 43.04 + 104,
-shape2 = 293 - 104 + 43.04 )
+```{r}
+
+ggplot() +
+geom_function(fun = dbeta,
+mapping = aes(color = "Pfizer"),
+args = list(shape1 = 0.700102, shape2 = 1),
+xlim = c(0,1)) +
+geom_function(fun = dbeta,
+mapping = aes(color = "Pfizer"),
+args = list(shape1 = 0.700102 + 8, shape2 = 162 + 1),
+xlim=c(0,1)) +
+geom_function(fun = dbeta,
+mapping = aes(color = "0.05"),
+args = list(shape1 = 43.04, shape2 = 43.04),
+xlim = c(0,1)) +
+geom_function(fun = dbeta,
+mapping = aes(color = "0.05"),
+args = list(shape1 = 43.04 + 8, shape2 = 162 + 43.04),
+xlim=c(0,1)) +
+geom_function(fun = dbeta,
+mapping = aes(color = "0.01"),
+args = list(shape1 = 85.63, shape2 = 85.63),
+xlim = c(0,1)) +
+geom_function(fun = dbeta,
+mapping = aes(color = "0.01"),
+args = list(shape1 = 85.63 + 8, shape2 = 162 + 85.63),
+xlim=c(0,1)) +
+scale_color_manual(name = "dist", 
+                   values = c("Pfizer" = "blue", "0.05" = "red", "0.01" = "black"))+
+labs(title = "Priors and Posteriors",
+x=expression(pi),
+y = "PDF")
+
 
 ```
+
+
+summarizing the posterior distribution of $\pi$
+
+```{r, echo = FALSE, eval = FALSE}
+# Pfizer Posterior
+pfizer_shape1 <- 0.700102 + 8
+pfizer_shape2 <- 162 + 1
+pfizer_median <- qbeta(0.5, shape1 = pfizer_shape1, shape2 = pfizer_shape2)
+pfizer_ci <- qbeta(c(0.025, 0.975), shape1 = pfizer_shape1, shape2 = pfizer_shape2)
+
+# 0.05 Prior Posterior
+prior1_shape1 <- prior1Beta + 8
+prior1_shape2 <- 162 + prior1Beta
+prior1_median <- qbeta(0.5, shape1 = prior1_shape1, shape2 = prior1_shape2)
+prior1_ci <- qbeta(c(0.025, 0.975), shape1 = prior1_shape1, shape2 = prior1_shape2)
+
+# 0.01 Prior Posterior
+prior2_shape1 <- prior2Beta + 8
+prior2_shape2 <- 162 + prior2Beta
+prior2_median <- qbeta(0.5, shape1 = prior2_shape1, shape2 = prior2_shape2)
+prior2_ci <- qbeta(c(0.025, 0.975), shape1 = prior2_shape1, shape2 = prior2_shape2)
+
+cat("Pfizer posterior median:", round(pfizer_median, 4), "\n")
+cat("95% CI for Pfizer: [", round(pfizer_ci[1], 4), ",", round(pfizer_ci[2], 4), "]\n\n")
+
+cat("0.05 prior posterior median:", round(prior1_median, 4), "\n")
+cat("95% CI for 0.05 prior: [", round(prior1_ci[1], 4), ",", round(prior1_ci[2], 4), "]\n\n")
+
+cat("0.01 prior posterior median:", round(prior2_median, 4), "\n")
+cat("95% CI for 0.01 prior: [", round(prior2_ci[1], 4), ",", round(prior2_ci[2], 4), "]\n")
+
+
+```
+Now we can do some confidence tests to see the significance of our estimates.
+  
+## Significance Tests and Posterior Distributions
+
+The Pfizer study used a $\text{Beta}(0.700102,1)$ prior. In our analysis, we compare this with two alternative prior distributions:
+$$
+\text{Beta}\Bigl(\text{Prior 1: } \text{Beta}\Bigl(`r round(prior1Beta[1],4)`,\, `r round(prior1Beta[1],4)`\Bigr) \Bigr)
+\quad \text{and} \quad
+\text{Beta}\Bigl(\text{Prior 2: } \text{Beta}\Bigl(`r round(prior2Beta[1],4)`,\, `r round(prior2Beta[1],4)`\Bigr) \Bigr).
+$$
+
+Given the data (with 8 successes and 162 failures), the posterior distributions are updated as follows:
+
+- **Pfizer Posterior:**
+$$
+h(\pi\mid t) = \text{Beta}\Bigl(0.700102 + 8,\, 162 + 1\Bigr)
+$$
+
+- **0.05 Prior Posterior:**
+$$
+h(\pi\mid t) = \text{Beta}\Bigl(`r round(prior1Beta[1],4)` + 8,\, 162 + `r round(prior1Beta[1],4)`\Bigr)
+$$
+
+- **0.01 Prior Posterior:**
+$$
+h(\pi\mid t) = \text{Beta}\Bigl(`r round(prior2Beta[1],4)` + 8,\, 162 + `r round(prior2Beta[1],4)`\Bigr)
+$$
+
+Below we compute the posterior medians and approximate 95\% credible intervals (using the 2.5th and 97.5th percentiles):
+
+- **Pfizer Posterior:**
+
+  Posterior median: $\approx `r round(qbeta(0.5, 0.700102 + 8, 162 + 1), 4)`$
+
+  95\% CI: $\Bigl[ `r round(qbeta(0.025, 0.700102 + 8, 162 + 1), 4)`,\; `r round(qbeta(0.975, 0.700102 + 8, 162 + 1), 4)` \Bigr]$
+
+- **0.05 Prior Posterior:**
+
+  Posterior median: $\approx `r round(qbeta(0.5, prior1Beta[1] + 8, 162 + prior1Beta[1]), 4)`$
+
+  95\% CI: $\Bigl[ `r round(qbeta(0.025, prior1Beta[1] + 8, 162 + prior1Beta[1]), 4)`,\; `r round(qbeta(0.975, prior1Beta[1] + 8, 162 + prior1Beta[1]), 4)` \Bigr]$
+
+- **0.01 Prior Posterior:**
+
+  Posterior median: $\approx `r round(qbeta(0.5, prior2Beta[1] + 8, 162 + prior2Beta[1]), 4)`$
+
+  95\% CI: $\Bigl[ `r round(qbeta(0.025, prior2Beta[1] + 8, 162 + prior2Beta[1]), 4)`,\; `r round(qbeta(0.975, prior2Beta[1] + 8, 162 + prior2Beta[1]), 4)` \Bigr]$
+\section*{Hypothesis Tests}
+
+We test the hypothesis for vaccine effectiveness:
+\[
+H_0: \pi \ge 0.5 \quad \text{vs} \quad H_1: \pi < 0.5.
+\]
+
+For each posterior distribution, the p-value is computed as the probability of observing 
+\(\pi \ge 0.5\) under the posterior, i.e.,
+\[
+p\text{-value} = 1 - F(0.5),
+\]
+where \(F(\beta)\) is the cumulative distribution function of the corresponding Beta posterior.
+
+\textbf{Pfizer Posterior:}
+\[
+p\text{-value} \approx `r round(1 - pbeta(0.5, 0.700102 + 8, 162 + 1), 4)`.
+\]
+
+\textbf{0.05 Prior Posterior:}
+\[
+p\text{-value} \approx `r round(1 - pbeta(0.5, prior1Beta[1] + 8, 162 + prior1Beta[1]), 4)`.
+\]
+
+\textbf{0.01 Prior Posterior:}
+\[
+p\text{-value} \approx `r round(1 - pbeta(0.5, prior2Beta[1] + 8, 162 + prior2Beta[1]), 4)`.
+\]
+
+
 
 # Results
 Present your findings. 
