@@ -1,7 +1,7 @@
 ---
-title: "Your Paper Title Here"
-author: "Your Name(s)"
-date: Date
+title: "Reanalyzing Pfizer’s BNT162b2 Vaccine Efficacy Using Bayesian and Frequentist Approaches"
+author: "Isaac Mulhestein, Jian Kang, Troy Russo"
+date: 3/16/2024
 output: pdf_document
 urlcolor: blue
 header-includes:
@@ -33,7 +33,6 @@ psi_dist <- function(x, shape1, shape2){
 # Abstract
 Write your abstract here.
 
-***TESTTTING****
 
 # Keywords
 *Maximum Likelihood Estimation*, *Bayesian Beta-Binomial Model*, *Parametric Bootstrap*, *Likelihood Ratio Test*
