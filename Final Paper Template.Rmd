@@ -89,12 +89,28 @@ cat("Estimated Vaccine Efficacy (VE):", VE_percent, "%\n")
 # Statistical Methods
 
 ## Model
-Describe the statistical model used.
+  The experiment uses a binomial model targeting 170 infections. $\pi$, the probability measure of this model, estimates the proportion of infected individuals that had received the vaccination. Because we are using a Binomial method, we are making assumptions that should be checked. We target 170 infections, so the constant trials assumption is met. Either the infected person received the vaccine or the placebo, so the assumption of only two outcomes is met. The parameter we are estimating, $\pi$, is assumed to have some unknown true value, an assumption we cannot strictly verify, but is reasonable to believe. Lastly, we assume that our observations are independent, which we once again cannot strictly verify, but given our large sample size and the number of individuals involved in the survey (*add number here*), this is a reasonable assumption. Thus, our experimental model is:
+  $$\sim Bin(170, \pi)$$
+
+  However, the parameter that we are more interested in making inference on is $\psi$, which represents the efficacy of the vaccine. This parameter is calculated as
+  $$\psi = \frac{1-2\pi}{1-\pi}$$ **Cite Result from Introduction**
+It is on this parameter that we are interested in making inference and drawing conclusions. Notably, the FDA (Food and Drug Administration) requires that in order for a drug to be released for wholesale production and use, it must be shown to have an efficacy greater than $0.3$. Thus, our hypothesis tests will test how statistically significant the evidence is that the vaccine has an efficacy greater than $0.3$.
+$$H_0: \psi = 0.3;\ \ \   H_1: \psi \neq 0.3$$
+We use two statistical methods to make this analysis: the Frequentist maximum likelihood method, and the Bayesian inference method.
 
 ## Likelihood Inference
-Detail the likelihood approach.
+We can begin with the Likelihood function. Recall that the design of our experiment is binomial; we observe 170 infections and try to make inference on $\pi$, the proportion of infections from those who have the vaccine. Assuming each observation is independent (which we have justified above), we can write our likelihood function in terms of $\pi$:
+$$L(\pi) = \binom{170}{x}(\pi)^x(1-\pi)^{170-x}$$
+Where $x$ is the observed number of infections where the patient had the vaccine.
 
-#likihood function:
+We can rewrite this likelihood function in terms of $\psi$:
+$$L^*(\psi) = \binom{n}{x}\left(\frac{\psi-1}{\psi-2}\right)^x\left(\frac{-1}{\psi-2}\right)^{n-x}$$
+To find the estimate of $\psi$ that maximizes this likelihood function, we found the log likelihood and took the first derivative, a derivation that can be found in the Appendix. our final formula is given by:
+
+$$\text{Put Final Formula Here}$$
+Given our estimate, we now want to perform a likelihood ratio test on which to test our hyhpotheses. We can initially find the likelihood ratio, $\Lambda$. It has formula given by:
+$$\Lambda = \frac{L(\hat{\psi}_0^{mle})}{L(\psi_0^{null})}$$
+#likelihood function:
 
 #MLE
 
@@ -399,3 +415,10 @@ $$0 = \frac{8}{\hat{\psi}_0^{mle} - 1} - \frac{170}{\hat{\psi}_0^{mle}-2}$$
 $$\frac{170}{\hat{\psi}_0^{mle}-2} = \frac{8}{\hat{\psi}_0^{mle}-1}$$
 $$170\hat{\psi}_0^{mle} - 170 = 8\hat{\psi}_0^{mle} - 16$$
 $$\hat{\psi}_0^{mle} = \frac{154}{162}$$
+
+Proof of Likelihood Ratio Test Value:
+
+Recall that when performing a hypothesis test for a maximum likelihood estimator, we are interested in predicting $W$, which is given by
+$$W = 2\ln\left[\frac{L(\hat{\psi}_0^{mle})}{L(\psi_0^{null})}\right]$$
+The log of the ratio of two likelihoods is equal to the difference of their respective log-likelihoods:
+$$W = 2\left(\ell(\hat{\psi}_0^{mle}) - \ell(\psi_0^{null})\right)$$
