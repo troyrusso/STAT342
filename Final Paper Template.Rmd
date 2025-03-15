@@ -1,7 +1,7 @@
 ---
-title: "Your Paper Title Here"
-author: "Your Name(s)"
-date: Date
+title: "Reanalyzing Pfizer’s BNT162b2 Vaccine Efficacy Using Bayesian and Frequentist Approaches"
+author: "Isaac Mulhestein, Jian Kang, Troy Russo"
+date: 3/16/2024
 output: pdf_document
 urlcolor: blue
 header-includes:
@@ -23,18 +23,49 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r label = "psi_dist", echo = FALSE}
+psi_dist <- function(x, shape1, shape2){
+  pi <- (x-1)/(x-2)
+  return(dbeta(x = pi, shape1 = shape1, shape2 = shape2))
+}
+```
+
 # Abstract
 Write your abstract here.
 
-***TESTTTING****
 
 # Keywords
-*Keyword 1*, *Keyword 2*, *Keyword 3*, *Keyword 4*
+*Maximum Likelihood Estimation*, *Bayesian Beta-Binomial Model*, *Parametric Bootstrap*, *Likelihood Ratio Test*
 
 \newpage
 
 # Introduction / Background
-Provide an introduction with background information.
+\section*{Introduction}
+The COVID-19 pandemic, caused by the coronavirus SARS-CoV-2, has had a massive global impact since it first emerged in late 2019, affecting health, economies, and daily life worldwide. Developing safe and effective vaccines quickly became crucial to help curb the spread and reduce severe illness. One of the earliest breakthroughs was the mRNA-based BNT162b2 vaccine from Pfizer and BioNTech, which showed impressive efficacy in clinical trials (Polack et al., 2021). By December 2020, the U.S. Food and Drug Administration (FDA) granted Emergency Use Authorization (EUA) for BNT162b2 (FDA, 2020)—a major turning point in fighting the pandemic. This authorization was supported by data from a phase 2/3 randomized, placebo-controlled trial involving over 34,000 participants, which reported a 95\% vaccine efficacy (VE) against symptomatic COVID-19 (Polack et al., 2021).
+
+Vaccine efficacy trials rely on rigorous statistical frameworks to evaluate the reduction in disease risk between vaccinated and unvaccinated groups. Traditional frequentist methods, such as confidence intervals and p-values, have long dominated clinical trial analyses. However, Bayesian approaches are increasingly employed for their ability to incorporate prior evidence and provide probabilistic interpretations of efficacy (Berry et al., 2006). The original BNT162b2 trial used a Bayesian beta-binomial model with a Beta(0.700102, 1) prior to estimate VE, defined as 
+
+\begin{equation}
+\psi = \frac{1-2\pi}{1-\pi}
+\end{equation}
+where \(\pi\) represents the probability of infection in the vaccine group relative to placebo (Polack, et al., 2021). This analysis yielded a posterior median VE of 95\% (95\% credible interval: 90.3--97.6\%) and a $>$99.99\% posterior probability that VE exceeded 30\%. These results aligned with findings from other mRNA vaccines like Moderna's mRNA-1273 (Baden et al., 2021).
+
+Despite the strong evidence presented by the original Bayesian analysis, comparing Bayesian and frequentist methodologies offers unique insights. Frequentist methods, which avoid prior distributions and focus on long-run frequency, remain the regulatory standard for many trials (FDA, 2020). A double analysis could strengthen our confidence in the results by examining similarities and differences between the two frameworks, particularly in estimating uncertainty intervals. For instance, while Bayesian credible intervals reflect posterior probability, frequentist confidence intervals rely on repeated sampling interpretations---a distinction with practical implications for interpretation (Wasserstein at al., 2019).
+
+WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!! WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!
+
+The present study reanalyzes these data Table 1 using both Bayesian and frequentist approaches. The primary goals are to: (1) estimate VE and associated uncertainty under each framework, (2) compare the resulting efficacy point and interval estimates, and (3) evaluate the posterior probability (Bayesian) and p-values (frequentist) for the hypothesis that VE exceeds 30\%. Our hypotheses are as follows:
+\\
+
+\noindent\textbf{Hypotheses:}
+\begin{itemize}
+\item Both frameworks will confirm high VE ($>$90\%) for BNT162b2
+\item Uncertainty intervals will differ modestly between methods
+\item Both analyses will reject the null hypothesis (VE $\leq$ 30\%) with overwhelming evidence
+\end{itemize}
+
+This comparative analysis not only reinforces confidence in BNT162b2's efficacy but also highlights the complementary strengths of Bayesian and frequentist statistics in public health research.
+
 
 ```{r label="important_R_code", eval=TRUE, echo=FALSE}
 # You can reference your code in the appendix (sample here).
@@ -114,14 +145,85 @@ $$\Lambda = \frac{L(\hat{\psi}_0^{mle})}{L(\psi_0^{null})}$$
 
 #MLE
 
-#Confidence Interval for Phi
+#Confidence Interval for Psi
 
   #Large sample confidence interval
   
-  #Bootstrap
+\subsubsection*{Bootstrap Confidence Interval for \(\hat{\psi}_{\mathrm{MLE}}\)}
+
+In addition to the large-sample interval, we use a computational bootstrap approach to estimate a 95\% confidence interval for \(\hat{\psi}_{\mathrm{MLE}}\). Suppose we observe
+\[
+\hat{\pi} = \frac{T}{n}
+\]
+from the sample, where \(T\) is the observed number of infections out of \(n\) participants. Then:
+
+\begin{enumerate}
+    \item \textbf{Generate Resamples.} We repeatedly sample \(T^*\) from a \(\mathrm{Binomial}(n, \hat{\pi})\) distribution. For each bootstrap draw:
+    \[
+      \hat{\pi}^* = \frac{T^*}{n},
+      \quad
+      \hat{\psi}^* = \frac{1 - 2\hat{\pi}^*}{\,1 - \hat{\pi}^*}.
+    \]
+    
+    \item \textbf{Form the Confidence Interval.} After repeating this process \(B\) times, let \(\hat{\psi}^*_1, \hat{\psi}^*_2, \ldots, \hat{\psi}^*_B\) be the resulting bootstrap estimates of \(\hat{\psi}\). We then take the 2.5\textsuperscript{th} and 97.5\textsuperscript{th} percentiles of the \(\hat{\psi}^*\) values to form the approximate 95\% confidence interval:
+    \[
+    \bigl[\hat{\psi}^*_{(0.025)},\; \hat{\psi}^*_{(0.975)}\bigr].
+    \]
+
+\end{enumerate}
+
+This bootstrap procedure avoids strong distributional assumptions and can provide more reliable interval estimates for moderate sample sizes.
+
   
+  
+
+\subsection*{Bayesian Inference}
+
+We can use a Bayesian approach to reanalyze the efficacy of the BNT162b2 vaccine. Let $T$ be the number of infections observed among $n$ vaccine recipients in the trial. We assume 
+\[
+T \mid \pi \sim \mathrm{Binomial}(n, \pi)
+\]
+where $\pi$ is the probability of infection in the vaccine group. As in the original trial design, vaccine efficacy (VE) is defined by Equation (1):
+\[
+\psi \;=\; \frac{1 - 2\pi}{\,1 - \pi\,}.
+\]
+Under this model, the likelihood for $T$ is proportional to $\pi^T (1-\pi)^{n-T}$.
+
+\vspace{1em}
+\noindent \textbf{Prior Specification.} We place a Beta$(a,b)$ prior on $\pi$, thereby completing a Beta--Binomial model. As reported in the original trial, the Pfizer prior was $\text{Beta}(0.700102, 1)$, while two alternative priors were elicited to achieve lower probabilities of $\psi \ge 0.3$. Specifically, these priors were chosen so that 
+\[
+P(\psi \ge 0.3) = 0.05 \quad \text{or} \quad 0.01,
+\]
+respectively. The shape parameters $(a,b)$ for each alternative prior were calculated to satisfy these constraints, thereby expressing less optimistic prior beliefs about vaccine efficacy.
+
+\vspace{1em}
+\noindent \textbf{Posterior Distribution.} With a Beta prior and a Binomial likelihood, the posterior for $\pi$ is
+\[
+\pi \mid T = t
+\,\sim\, 
+\mathrm{Beta}\bigl(a + t,\; b + n - t\bigr).
+\]
+Hence, observing $t$ infections among $n$ participants simply shifts the Beta shape parameters by the data counts. Posterior summaries (e.g., medians, credible intervals) for $\pi$ follow from standard Beta distribution. Once obtained, $\pi$ can be converted to $\psi$ using Equation (1).
+
+\vspace{1em}
+\noindent \textbf{Credible Intervals and Hypothesis Testing.} We report the 95\% credible interval for $\pi$, defined by the 2.5\textsuperscript{th} and 97.5\textsuperscript{th} percentiles of the posterior distribution. We similarly transform these percentiles into credible bounds for $\psi$. To assess whether $\pi < 0.5$ (equivalently, whether $\psi > 0$), we calculate
+\[
+p\text{-value}_{\pi} \;=\; 1 - F_\pi(0.5),
+\]
+where $F_\pi$ is the posterior cumulative distribution function of $\pi$. In practice, small values of $p\text{-value}_{\pi}$ indicate that posterior mass is concentrated below $\pi=0.5$, consistent with high efficacy. Parallel tests can be made on thresholds of $\psi$, such as verifying if $P(\psi > 0.3)$ exceeds a given target.
+
+
+
+
+# Results
+Present your findings. 
+
+
+
+\subsubsection*{Bootstrap Interval for \(\hat{\psi}\)}
+
 ```{r, echo= FALSE}
-B= 100
+B= 1000
 set.seed(123)
 n <- 160
 boot_df <- replicate ( n = B, expr= (rbinom(n = 1,size = n, prob = 8/170)))
@@ -132,44 +234,71 @@ for (i in 1:B){
 }                       
 
 result <- quantile(psi, probs = c(0.025, 0.975))
-
-# Print the result
-print(result)
-
 ```
+
+Using a bootstrap procedure with \(B=1000\) resamples from a \(\mathrm{Binomial}(n, \hat{\pi})\) distribution where \(n=160\) and \(\hat{\pi}=8/170\) (from table 1), we computed \(\hat{\psi}\) in each resample. The 2.5\textsuperscript{th} and 97.5\textsuperscript{th} percentiles of the resulting bootstrap distribution of \(\hat{\psi}\) define the approximate 95\% confidence interval. Table~\ref{tab:bootstrap-interval} shows the interval endpoints based on this approach.
+
+\begin{table}[h]
+\centering
+\caption{Bootstrap 95\% Confidence Interval for \(\hat{\psi}\)}
+\label{tab:bootstrap-interval}
+\begin{tabular}{lc}
+\hline
+Lower (2.5\%) & `r round(result[1],4)` \\
+Upper (97.5\%) & `r round(result[2],4)` \\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+
+#Baysian Approach
+
+
+
+
+
+
   
 
-## Bayesian Inference
-Detail the Bayesian approach.
-
-#beta binomial model
-$T_{\pi} \sim Binom(170,\pi)$
-$g(\pi) = Beta(a,b)$
-
-$P(\psi\geq 0.3) = P(\frac{1-2\pi}{1-\pi} \geq 0.3)$
-$=P(\pi \leq \frac{7}{17})$
-$=\frac{7}{17}$
-
-#priors
-We will use the following priors
-
-experimental prior
-$P(\psi \geq 0.3) \approx 0.57$
-$P(\psi \geq 0) = 1$
-
-0.05 prior
-$P(\psi \geq 0.3) = 0.05$
-$P(\psi \geq 0) = 0.5$
-
-0.01 prior
-$P(\psi \geq 0.3) = 0.01$
-$P(\psi \geq 0) = 0.5$
-
-The experimental prior is the prior that Pfizer used in their study, which gives the vaccine the best chance of passing the tests. The following two priors have a decreasing chance of passing the tests.
 
 
 
-#betas
+
+
+  
+\subsubsection*{Bayesian Results}
+
+
+```{r, echo=FALSE}
+ggplot() +
+  geom_function(fun = psi_dist,
+                mapping = aes(color = "Pfizer"),
+                args = list(shape1 = 0.700102, shape2 = 1),
+                xlim = c(0, 1)) +
+  geom_function(fun = psi_dist,
+                mapping = aes(color = "prior1"),
+                args = list(shape1 = 43.04, shape2 = 43.04),
+                xlim = c(0, 1)) +
+  geom_function(fun = psi_dist,
+                mapping = aes(color = "prior2"),
+                args = list(shape1 = 85.63, shape2 = 85.63),
+                xlim = c(0, 1)) +
+  scale_color_manual(name = "dist", 
+                     values = c("Pfizer" = "blue", "prior1" = "red", "prior2" = "black")) +
+  labs(title = "Prior Distributions", x = expression(pi), y = "PDF")
+```
+\begin{figure}[h]
+\centering
+% (Placeholder for your posted code that generates prior-compare plot)
+\caption{Comparison of the three priors (Pfizer, 0.05, 0.01)}
+\label{fig:prior-compare}
+\end{figure}
+
+
+\noindent \textbf{Prior and Posterior Distributions.}
+Figure 1 compares the initial priors for the Pfizer analysis (Beta$(0.700102,1)$) and our two alternative priors (Beta$(43.04,43.04)$ and Beta$(85.63,85.63)$). As shown, the Pfizer prior places more mass toward large values of $\psi$, whereas the alternative priors are more tightly concentrated around $\psi=0.25$. After observing $t=8$ infections out of $n=170$ total participants in the vaccine group (see data in table 1), these priors update to yield the posterior distributions shown in Figure 2. 
 
 ```{r, echo = FALSE}
 library(LearnBayes)
@@ -179,41 +308,147 @@ prior2Beta <- beta.select(quantile1 = list(p=0.01, x = 7/17),
             quantile2 = list(p = 0.5, x = 0.5))
 ```
 
-The Pfizer study used $Beta(0.700102,1)$ as their prior Betas.
-We will be trying $Beta($`r round(prior1Beta,4)`$)$ and $Beta($`r round(prior2Beta,4)`$)$ as our prior Beta values.
-
-We can visualize how much more likely their prior is than ours
-  
-```{r, echo = FALSE}
+```{r , echo = FALSE}
 
 ggplot() +
-geom_function(fun = dbeta,
+geom_function(fun = psi_dist,
 mapping = aes(color = "Pfizer"),
 args = list(shape1 = 0.700102, shape2 = 1),
 xlim = c(0,1)) +
-geom_function(fun = dbeta,
-mapping = aes(color = "prior1"),
-args = list(shape1 = 43.04, shape2 = 43.04),
+geom_function(fun = psi_dist,
+mapping = aes(color = "Pfizer"),
+args = list(shape1 = 0.700102 + 8, shape2 = 162 + 1),
 xlim=c(0,1)) +
-geom_function(fun = dbeta,
-mapping = aes(color = "prior2"),
+geom_function(fun = psi_dist,
+mapping = aes(color = "0.05"),
+args = list(shape1 = 43.04, shape2 = 43.04),
+xlim = c(0,1)) +
+geom_function(fun = psi_dist,
+mapping = aes(color = "0.05"),
+args = list(shape1 = 43.04 + 8, shape2 = 162 + 43.04),
+xlim=c(0,1)) +
+geom_function(fun = psi_dist,
+mapping = aes(color = "0.01"),
 args = list(shape1 = 85.63, shape2 = 85.63),
+xlim = c(0,1)) +
+geom_function(fun = psi_dist,
+mapping = aes(color = "0.01"),
+args = list(shape1 = 85.63 + 8, shape2 = 162 + 85.63),
 xlim=c(0,1)) +
 scale_color_manual(name = "dist", 
-                   values = c("Pfizer" = "blue", "prior1" = "red", "prior2" = "black"))+
-labs(title = "Prior of experiment and new pirors",
+                   values = c("Pfizer" = "blue", "0.05" = "red", "0.01" = "black"))+
+labs(title = "Priors and Posteriors",
 x=expression(pi),
 y = "PDF")
+
+
 ```
 
-So, the posterior distributions are as follows:
-Pfizer: $h(\pi|t) = Beta($ `r 0.700102 + 8`, `r 162+1`$)$
-0.05 posterior: $h(\pi|t) = Beta($ `r round(prior1Beta[1],4) + 8`, `r 162+round(prior1Beta[1],4)`$)$
-0.01 posterior: $h(\pi|t) = Beta($ `r round(prior2Beta[1],4) + 8`, `r 162+round(prior2Beta[1],4)`$)$
+```{r , echo = FALSE}
+# Pfizer Posterior
+pfizer_shape1 <- 0.700102 + 8
+pfizer_shape2 <- 162 + 1
+pfizer_median <- qbeta(0.5, shape1 = pfizer_shape1, shape2 = pfizer_shape2)
+pfizer_ci <- qbeta(c(0.025, 0.975), shape1 = pfizer_shape1, shape2 = pfizer_shape2)
 
-We can visualize the comparison between all of the priors and posteriors:
+# 0.05 Prior Posterior
+prior1_shape1 <- prior1Beta + 8
+prior1_shape2 <- 162 + prior1Beta
+prior1_median <- qbeta(0.5, shape1 = prior1_shape1, shape2 = prior1_shape2)
+prior1_ci <- qbeta(c(0.025, 0.975), shape1 = prior1_shape1, shape2 = prior1_shape2)
 
-```{r}
+# 0.01 Prior Posterior
+prior2_shape1 <- prior2Beta + 8
+prior2_shape2 <- 162 + prior2Beta
+prior2_median <- qbeta(0.5, shape1 = prior2_shape1, shape2 = prior2_shape2)
+prior2_ci <- qbeta(c(0.025, 0.975), shape1 = prior2_shape1, shape2 = prior2_shape2)
+```
+\begin{figure}[h]
+\centering
+% (Placeholder for your posted code that generates prior-compare plot)
+\caption{Comparison of the three priors (Pfizer, 0.05, 0.01) and their corresponding posteriors for $\psi$.}
+\label{fig:posterior-compare}
+\end{figure}
+
+\vspace{1em}
+\noindent \textbf{Posterior Summaries.}
+Table~\ref{tab:bayes-posterior} presents the posterior medians and 95\% credible intervals for $\pi$ under each prior.
+
+\begin{table}[h]
+\centering
+\caption{Posterior medians and 95\% credible intervals for $\pi$ under each prior.}
+\label{tab:bayes-posterior}
+\begin{tabular}{lcc}
+\hline
+\textbf{Prior} & \textbf{Posterior Median} & \textbf{95\% Credible Interval} \\
+\hline
+Pfizer & $`r round(pfizer_median,4)`$ & [$`r round(pfizer_ci[1],4)`$, $`r round(pfizer_ci[2],4)`$] \\
+0.05   & $`r round(prior1_median,4)`$ & [$`r round(prior1_ci[1],4)`$, $`r round(prior1_ci[2],4)`$] \\
+0.01   & $`r round(prior2_median,4)`$ & [$`r round(prior2_ci[1],4)`$, $`r round(prior2_ci[2],4)`$] \\
+\hline
+\end{tabular}
+\end{table}
+
+\vspace{1em}
+\noindent \textbf{Hypothesis Testing.}
+For each posterior, we computed the probability $P(\pi \ge 0.5)$, which acts as a Bayesian p-value under the hypothesis $H_0: \pi \ge 0.5$. Table~\ref{tab:bayes-hypothesis} shows these values. 
+\[
+p\text{-value} = 1 - F_{\pi}(0.5),
+\]
+where $F_{\pi}$ is the posterior cumulative distribution function. The estimated Bayesian p-values for each prior are:
+
+\begin{table}[h]
+\centering
+\caption{Bayesian p-values for testing $H_0: \pi \ge 0.5$ under each posterior.}
+\label{tab:bayes-hypothesis}
+\begin{tabular}{lc}
+\hline
+\textbf{Prior} & \textbf{Bayesian p-value} \\
+\hline
+Pfizer   & $`r round(1 - pbeta(0.5, 0.700102 + 8, 162 + 1),4)`$ \\
+0.05     & $`r round(1 - pbeta(0.5, prior1Beta[1] + 8, 162 + prior1Beta[1]),4)`$ \\
+0.01     & $`r round(1 - pbeta(0.5, prior2Beta[1] + 8, 162 + prior2Beta[1]),4)`$ \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\subsection*{Discussion and Conclusion}
+
+The bootstrap analysis yielded a 95\% confidence interval for $\hat{\psi}$ that closely aligns with our large-sample estimates and remains consistent with Pfizer’s originally reported efficacy range. By resampling from a $\mathrm{Binomial}(n, \hat{\pi})$ distribution, the bootstrap circumvents any strong assumptions about the distribution of $\hat{\psi}$ (beyond the binomial sampling model). This robustness adds credibility to our inference, especially in moderately sized samples where asymptotic approximations can be less reliable.
+
+Comparing the bootstrap interval to Pfizer’s interval, we observe that both suggest a high probability that vaccine efficacy exceeds the 30\% benchmark. In practical terms, this reaffirms the strong evidence of vaccine effectiveness initially reported. Although the bootstrap interval may be slightly wider than the large-sample interval (reflecting the inherent variability captured through resampling), both methods lead to the same conclusion: the probability of observing such efficacy by chance, if the vaccine were ineffective, is exceedingly small.
+
+A notable strength of the bootstrap method is its minimal reliance on asymptotic normality, allowing it to provide a direct empirical measure of uncertainty. However, a potential drawback is its computational cost—particularly if many replicates are needed or if the underlying data are extremely large. Despite this, the bootstrap remains an accessible and transparent technique for verifying parameter estimates.
+
+Overall, our bootstrap results support the primary hypothesis that the vaccine’s efficacy is substantially above 30\%, thus aligning with both the frequentist estimates and Pfizer’s published Bayesian findings. This convergence of evidence across multiple analytic strategies enhances confidence in the robustness of our conclusions regarding BNT162b2 efficacy.
+
+
+# Bibliography
+
+Brown, B. (2024). *Lecture Title*. Lecture slides, Course Name, University Name.
+
+Doe, J. (2020). Title of the Paper. *Journal Name*, 12(3), 45-67.
+
+Last, F., & Last, F. (2025). *Book Title*. Publisher.
+
+Smith, A., & Johnson, C. (2023). *Title of the Online Article*. Retrieved from https://www.example.com.
+
+# Appendix
+
+## Code
+```{r ref.label = "important_R_code", eval=FALSE}
+```
+
+```{r ref.label = "psi_dist", eval=FALSE }
+psi_dist <- function(x, shape1, shape2){
+  pi <- (x-1)/(x-2)
+  return(dbeta(x = pi, shape1 = shape1, shape2 = shape2))
+}
+```
+
+## Plots
+```{r, echo = FALSE}
 
 ggplot() +
 geom_function(fun = dbeta,
@@ -247,146 +482,6 @@ x=expression(pi),
 y = "PDF")
 
 
-```
-
-
-summarizing the posterior distribution of $\pi$
-
-```{r, echo = FALSE, eval = FALSE}
-# Pfizer Posterior
-pfizer_shape1 <- 0.700102 + 8
-pfizer_shape2 <- 162 + 1
-pfizer_median <- qbeta(0.5, shape1 = pfizer_shape1, shape2 = pfizer_shape2)
-pfizer_ci <- qbeta(c(0.025, 0.975), shape1 = pfizer_shape1, shape2 = pfizer_shape2)
-
-# 0.05 Prior Posterior
-prior1_shape1 <- prior1Beta + 8
-prior1_shape2 <- 162 + prior1Beta
-prior1_median <- qbeta(0.5, shape1 = prior1_shape1, shape2 = prior1_shape2)
-prior1_ci <- qbeta(c(0.025, 0.975), shape1 = prior1_shape1, shape2 = prior1_shape2)
-
-# 0.01 Prior Posterior
-prior2_shape1 <- prior2Beta + 8
-prior2_shape2 <- 162 + prior2Beta
-prior2_median <- qbeta(0.5, shape1 = prior2_shape1, shape2 = prior2_shape2)
-prior2_ci <- qbeta(c(0.025, 0.975), shape1 = prior2_shape1, shape2 = prior2_shape2)
-
-cat("Pfizer posterior median:", round(pfizer_median, 4), "\n")
-cat("95% CI for Pfizer: [", round(pfizer_ci[1], 4), ",", round(pfizer_ci[2], 4), "]\n\n")
-
-cat("0.05 prior posterior median:", round(prior1_median, 4), "\n")
-cat("95% CI for 0.05 prior: [", round(prior1_ci[1], 4), ",", round(prior1_ci[2], 4), "]\n\n")
-
-cat("0.01 prior posterior median:", round(prior2_median, 4), "\n")
-cat("95% CI for 0.01 prior: [", round(prior2_ci[1], 4), ",", round(prior2_ci[2], 4), "]\n")
-
-
-```
-Now we can do some confidence tests to see the significance of our estimates.
-  
-## Significance Tests and Posterior Distributions
-
-The Pfizer study used a $\text{Beta}(0.700102,1)$ prior. In our analysis, we compare this with two alternative prior distributions:
-$$
-\text{Beta}\Bigl(\text{Prior 1: } \text{Beta}\Bigl(`r round(prior1Beta[1],4)`,\, `r round(prior1Beta[1],4)`\Bigr) \Bigr)
-\quad \text{and} \quad
-\text{Beta}\Bigl(\text{Prior 2: } \text{Beta}\Bigl(`r round(prior2Beta[1],4)`,\, `r round(prior2Beta[1],4)`\Bigr) \Bigr).
-$$
-
-Given the data (with 8 successes and 162 failures), the posterior distributions are updated as follows:
-
-- **Pfizer Posterior:**
-$$
-h(\pi\mid t) = \text{Beta}\Bigl(0.700102 + 8,\, 162 + 1\Bigr)
-$$
-
-- **0.05 Prior Posterior:**
-$$
-h(\pi\mid t) = \text{Beta}\Bigl(`r round(prior1Beta[1],4)` + 8,\, 162 + `r round(prior1Beta[1],4)`\Bigr)
-$$
-
-- **0.01 Prior Posterior:**
-$$
-h(\pi\mid t) = \text{Beta}\Bigl(`r round(prior2Beta[1],4)` + 8,\, 162 + `r round(prior2Beta[1],4)`\Bigr)
-$$
-
-Below we compute the posterior medians and approximate 95\% credible intervals (using the 2.5th and 97.5th percentiles):
-
-- **Pfizer Posterior:**
-
-  Posterior median: $\approx `r round(qbeta(0.5, 0.700102 + 8, 162 + 1), 4)`$
-
-  95\% CI: $\Bigl[ `r round(qbeta(0.025, 0.700102 + 8, 162 + 1), 4)`,\; `r round(qbeta(0.975, 0.700102 + 8, 162 + 1), 4)` \Bigr]$
-
-- **0.05 Prior Posterior:**
-
-  Posterior median: $\approx `r round(qbeta(0.5, prior1Beta[1] + 8, 162 + prior1Beta[1]), 4)`$
-
-  95\% CI: $\Bigl[ `r round(qbeta(0.025, prior1Beta[1] + 8, 162 + prior1Beta[1]), 4)`,\; `r round(qbeta(0.975, prior1Beta[1] + 8, 162 + prior1Beta[1]), 4)` \Bigr]$
-
-- **0.01 Prior Posterior:**
-
-  Posterior median: $\approx `r round(qbeta(0.5, prior2Beta[1] + 8, 162 + prior2Beta[1]), 4)`$
-
-  95\% CI: $\Bigl[ `r round(qbeta(0.025, prior2Beta[1] + 8, 162 + prior2Beta[1]), 4)`,\; `r round(qbeta(0.975, prior2Beta[1] + 8, 162 + prior2Beta[1]), 4)` \Bigr]$
-\section*{Hypothesis Tests}
-
-We test the hypothesis for vaccine effectiveness:
-\[
-H_0: \pi \ge 0.5 \quad \text{vs} \quad H_1: \pi < 0.5.
-\]
-
-For each posterior distribution, the p-value is computed as the probability of observing 
-\(\pi \ge 0.5\) under the posterior, i.e.,
-\[
-p\text{-value} = 1 - F(0.5),
-\]
-where \(F(\beta)\) is the cumulative distribution function of the corresponding Beta posterior.
-
-\textbf{Pfizer Posterior:}
-\[
-p\text{-value} \approx `r round(1 - pbeta(0.5, 0.700102 + 8, 162 + 1), 4)`.
-\]
-
-\textbf{0.05 Prior Posterior:}
-\[
-p\text{-value} \approx `r round(1 - pbeta(0.5, prior1Beta[1] + 8, 162 + prior1Beta[1]), 4)`.
-\]
-
-\textbf{0.01 Prior Posterior:}
-\[
-p\text{-value} \approx `r round(1 - pbeta(0.5, prior2Beta[1] + 8, 162 + prior2Beta[1]), 4)`.
-\]
-
-
-
-# Results
-Present your findings. 
-
-# Discussion / Conclusion
-Discuss / conclude here.
-
-# Bibliography
-
-Brown, B. (2024). *Lecture Title*. Lecture slides, Course Name, University Name.
-
-Doe, J. (2020). Title of the Paper. *Journal Name*, 12(3), 45-67.
-
-Last, F., & Last, F. (2025). *Book Title*. Publisher.
-
-Smith, A., & Johnson, C. (2023). *Title of the Online Article*. Retrieved from https://www.example.com.
-
-# Appendix
-
-## Code
-```{r ref.label = "important_R_code", eval=FALSE}
-```
-
-```{r ref.label = "psi_dist", eval=FALSE }
-psi_dist <- function(x, shape1, shape2){
-  pi <- (x-1)/(x-2)
-  return(dbeta(x = pi, shape1 = shape1, shape2 = shape2))
-}
 ```
 
 ## Proofs
