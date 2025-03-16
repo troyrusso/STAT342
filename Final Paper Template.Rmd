@@ -1,6 +1,6 @@
 ---
 title: "Reanalyzing Pfizer’s BNT162b2 Vaccine Efficacy Using Bayesian and Frequentist Approaches"
-author: "Isaac Mulhestein, Jian Kang, Troy Russo"
+author: "Isaac Muhlestein, Jian Kang, Troy Russo"
 date: 3/16/2024
 output: pdf_document
 urlcolor: blue
@@ -28,6 +28,15 @@ psi_dist <- function(x, shape1, shape2){
   pi <- (x-1)/(x-2)
   return(dbeta(x = pi, shape1 = shape1, shape2 = shape2))
 }
+
+pi_transform <- function(psi_val) {
+  (psi_val - 1) / (psi_val - 2)
+}
+
+# Define the transformation function
+psi_transform <- function(pi_val) {
+  (1 - 2 * pi_val) / (1 - pi_val)
+}
 ```
 
 # Abstract
@@ -52,10 +61,24 @@ where \(\pi\) represents the probability of infection in the vaccine group relat
 
 Despite the strong evidence presented by the original Bayesian analysis, comparing Bayesian and frequentist methodologies offers unique insights. Frequentist methods, which avoid prior distributions and focus on long-run frequency, remain the regulatory standard for many trials (FDA, 2020). A double analysis could strengthen our confidence in the results by examining similarities and differences between the two frameworks, particularly in estimating uncertainty intervals. For instance, while Bayesian credible intervals reflect posterior probability, frequentist confidence intervals rely on repeated sampling interpretations---a distinction with practical implications for interpretation (Wasserstein at al., 2019).
 
-WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!! WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!WE NEED TO ADD A TABLE OF THE ORIGINAL DATA HERE!!!!
+\begin{table}[h]
+\centering
+\caption{Vaccine Efficacy against Covid-19 at least 7 days after the second dose in patients without evidence of infection.}
+\label{tab:vaccine-efficacy}
+\begin{tabular}{lcc}
+\hline
+\textbf{Group} & \textbf{Cases} & \textbf{Sample Size} \\
+\hline
+BNT162b2  & 8   & 17,411  \\
+Placebo   & 162 & 17,511  \\
+Total     & 170 & 34,922  \\
+\hline
+\end{tabular}
+\end{table}
+
 
 The present study reanalyzes these data Table 1 using both Bayesian and frequentist approaches. The primary goals are to: (1) estimate VE and associated uncertainty under each framework, (2) compare the resulting efficacy point and interval estimates, and (3) evaluate the posterior probability (Bayesian) and p-values (frequentist) for the hypothesis that VE exceeds 30\%. Our hypotheses are as follows:
-\\
+
 
 \noindent\textbf{Hypotheses:}
 \begin{itemize}
@@ -105,15 +128,29 @@ ggplot(data, aes(x = Group, y = IncidenceRate, fill = Group)) +
 
 ```
 ```{r}
-# Calculate attack rates:
+# Calculate attack rates
 attack_rate_vaccine <- 8 / 17411
 attack_rate_placebo <- 162 / 17511
 
-# Vaccine efficacy (VE) is defined as 1 - (attack rate in vaccine group) / (attack rate in placebo group)
-VE <- 1 - attack_rate_vaccine / attack_rate_placebo
+# Calculate Vaccine Efficacy (VE)
+VE <- 1 - (attack_rate_vaccine / attack_rate_placebo)
 VE_percent <- round(VE * 100, 2)
 
-cat("Estimated Vaccine Efficacy (VE):", VE_percent, "%\n")
+# Create a table for display
+VE_table <- data.frame(
+  `Group` = c("BNT162b2 (Vaccine)", "Placebo", "Vaccine Efficacy"),
+  `Attack Rate` = c(round(attack_rate_vaccine * 100, 3), 
+                    round(attack_rate_placebo * 100, 3), 
+                    paste0(VE_percent, "%"))
+)
+
+# Output the table in a formatted way
+knitr::kable(VE_table, 
+             caption = "Estimated Vaccine Efficacy (VE) based on observed attack rates.",
+             col.names = c("Group", "Attack Rate (%)"),
+             align = "c",
+             booktabs = TRUE)
+
 
 ```
 
@@ -346,6 +383,37 @@ prior2_shape1 <- prior2Beta + 8
 prior2_shape2 <- 162 + prior2Beta
 prior2_median <- qbeta(0.5, shape1 = prior2_shape1, shape2 = prior2_shape2)
 prior2_ci <- qbeta(c(0.025, 0.975), shape1 = prior2_shape1, shape2 = prior2_shape2)
+
+
+
+# Approximate median for psi
+pfizer_median_psi   <- psi_transform(pfizer_median)
+prior1_median_psi   <- psi_transform(prior1_median)
+prior2_median_psi   <- psi_transform(prior2_median)
+
+# Approximate endpoints for psi
+pfizer_ci_psi       <- psi_transform(pfizer_ci)
+prior1_ci_psi       <- psi_transform(prior1_ci)
+prior2_ci_psi       <- psi_transform(prior2_ci)
+
+
+
+# The threshold for pi at which psi = 0.3
+pi_threshold_for_psi_0.3 <- pi_transform(0.3)
+
+# Probability that pi >= 0.4117647
+p_psi_pfizer <- 1 - pbeta(pi_threshold_for_psi_0.3,
+                          shape1 = pfizer_shape1,
+                          shape2 = pfizer_shape2)
+
+p_psi_prior1 <- 1 - pbeta(pi_threshold_for_psi_0.3,
+                          shape1 = prior1_shape1,
+                          shape2 = prior1_shape2)
+
+p_psi_prior2 <- 1 - pbeta(pi_threshold_for_psi_0.3,
+                          shape1 = prior2_shape1,
+                          shape2 = prior2_shape2)
+
 ```
 \begin{figure}[h]
 \centering
@@ -355,49 +423,63 @@ prior2_ci <- qbeta(c(0.025, 0.975), shape1 = prior2_shape1, shape2 = prior2_shap
 \end{figure}
 
 \vspace{1em}
-\noindent \textbf{Posterior Summaries.}
-Table~\ref{tab:bayes-posterior} presents the posterior medians and 95\% credible intervals for $\pi$ under each prior.
+\noindent \textbf{Posterior Summaries (for \(\psi\)).}
+Table~\ref{tab:bayes-posterior-psi} presents the \textit{approximate} posterior medians and 95\% credible intervals for \(\psi\) under each prior (calculated by transforming the corresponding values for \(\pi\)).
 
 \begin{table}[h]
 \centering
-\caption{Posterior medians and 95\% credible intervals for $\pi$ under each prior.}
-\label{tab:bayes-posterior}
+\caption{Approximate posterior medians and 95\% credible intervals for $\psi$ under each prior.}
+\label{tab:bayes-posterior-psi}
 \begin{tabular}{lcc}
 \hline
-\textbf{Prior} & \textbf{Posterior Median} & \textbf{95\% Credible Interval} \\
+\textbf{Prior} & \textbf{Posterior Median} & \textbf{95\% Credible Interval (Approx)} \\
 \hline
-Pfizer & $`r round(pfizer_median,4)`$ & [$`r round(pfizer_ci[1],4)`$, $`r round(pfizer_ci[2],4)`$] \\
-0.05   & $`r round(prior1_median,4)`$ & [$`r round(prior1_ci[1],4)`$, $`r round(prior1_ci[2],4)`$] \\
-0.01   & $`r round(prior2_median,4)`$ & [$`r round(prior2_ci[1],4)`$, $`r round(prior2_ci[2],4)`$] \\
+Pfizer 
+ & $`r round(pfizer_median_psi,4)`$ 
+ & [$`r round(pfizer_ci_psi[2],4)`$, $`r round(pfizer_ci_psi[1],4)`$] \\
+0.05   
+ & $`r round(prior1_median_psi[1],4)`$ 
+ & [$`r round(prior1_ci_psi[2],4)`$, $`r round(prior1_ci_psi[1],4)`$] \\
+0.01   
+ & $`r round(prior2_median_psi[1],4)`$ 
+ & [$`r round(prior2_ci_psi[2],4)`$, $`r round(prior2_ci_psi[1],4)`$] \\
 \hline
 \end{tabular}
 \end{table}
 
 \vspace{1em}
-\noindent \textbf{Hypothesis Testing.}
-For each posterior, we computed the probability $P(\pi \ge 0.5)$, which acts as a Bayesian p-value under the hypothesis $H_0: \pi \ge 0.5$. Table~\ref{tab:bayes-hypothesis} shows these values. 
+\noindent \textbf{Hypothesis Testing (for \(\psi\)).}
+For each posterior, we computed the probability \(P(\psi \le 0.3)\), which serves as a Bayesian p-value under the hypothesis 
 \[
-p\text{-value} = 1 - F_{\pi}(0.5),
+H_0: \psi \le 0.3 
+\quad \text{vs.} \quad 
+H_1: \psi > 0.3.
 \]
-where $F_{\pi}$ is the posterior cumulative distribution function. The estimated Bayesian p-values for each prior are:
+(This threshold can be changed as needed, depending on your target efficacy.) Table~\ref{tab:bayes-hypothesis-psi} shows these values. We define
+\[
+p\text{-value} = P(\psi \le 0.3),
+\]
+where \(F_\psi\) is the posterior cumulative distribution function of \(\psi\). The estimated Bayesian p-values for each prior are:
 
 \begin{table}[h]
 \centering
-\caption{Bayesian p-values for testing $H_0: \pi \ge 0.5$ under each posterior.}
-\label{tab:bayes-hypothesis}
+\caption{Bayesian p-values for testing $H_0: \psi \le 0.3$ under each posterior.}
+\label{tab:bayes-hypothesis-psi}
 \begin{tabular}{lc}
 \hline
 \textbf{Prior} & \textbf{Bayesian p-value} \\
 \hline
-Pfizer   & $`r round(1 - pbeta(0.5, 0.700102 + 8, 162 + 1),4)`$ \\
-0.05     & $`r round(1 - pbeta(0.5, prior1Beta[1] + 8, 162 + prior1Beta[1]),4)`$ \\
-0.01     & $`r round(1 - pbeta(0.5, prior2Beta[1] + 8, 162 + prior2Beta[1]),4)`$ \\
+Pfizer   & $`r round(p_psi_pfizer,4)`$ \\
+0.05     & $`r round(p_psi_prior1,4)`$ \\
+0.01     & $`r round(p_psi_prior2,4)`$ \\
 \hline
 \end{tabular}
 \end{table}
 
 
 \subsection*{Discussion and Conclusion}
+
+\subsection*{Bootstrap}
 
 The bootstrap analysis yielded a 95\% confidence interval for $\hat{\psi}$ that closely aligns with our large-sample estimates and remains consistent with Pfizer’s originally reported efficacy range. By resampling from a $\mathrm{Binomial}(n, \hat{\pi})$ distribution, the bootstrap circumvents any strong assumptions about the distribution of $\hat{\psi}$ (beyond the binomial sampling model). This robustness adds credibility to our inference, especially in moderately sized samples where asymptotic approximations can be less reliable.
 
@@ -406,6 +488,19 @@ Comparing the bootstrap interval to Pfizer’s interval, we observe that both su
 A notable strength of the bootstrap method is its minimal reliance on asymptotic normality, allowing it to provide a direct empirical measure of uncertainty. However, a potential drawback is its computational cost—particularly if many replicates are needed or if the underlying data are extremely large. Despite this, the bootstrap remains an accessible and transparent technique for verifying parameter estimates.
 
 Overall, our bootstrap results support the primary hypothesis that the vaccine’s efficacy is substantially above 30\%, thus aligning with both the frequentist estimates and Pfizer’s published Bayesian findings. This convergence of evidence across multiple analytic strategies enhances confidence in the robustness of our conclusions regarding BNT162b2 efficacy.
+
+
+\subsection*{Bayesian}
+
+Our Bayesian analysis provides consistent evidence that the vaccine efficacy \(\psi\) remains high. As shown in \textbf{Figure~2}, updating the Pfizer prior \(\mathrm{Beta}(0.700102,1)\) and two alternative priors \(\mathrm{Beta}(43.04,43.04)\) and \(\mathrm{Beta}(85.63,85.63)\) with the observed data \((t=8,\, n=170)\) yields posterior distributions for \(\psi\) that are heavily skewed toward large efficacy values.
+
+\textbf{Table~3} details the approximate numerical results for \(\psi\). Even though the alternative priors initially place more mass around intermediate efficacy, the data strongly pull the posterior medians upward.
+
+Although the alternative priors shift the posterior to moderately lower efficacy, the observed infection count (only 8 out of 170) still imposes a high central estimate for \(\psi\). This suggests that once sufficient data are incorporated, the final posterior distribution is relatively robust to prior differences.
+
+Finally, \textbf{Table~4} presents Bayesian p-values for testing a clinically relevant hypothesis such as \(H_0: \psi \le 0.3\). For all three priors, \(P(\psi \le 0.3)\) is effectively zero, implying near-certain rejection of \(H_0\). This finding aligns with the frequentist conclusion of strong efficacy, further bolstering overall confidence in the result.
+
+Overall, the Bayesian framework yields direct probability statements about clinically meaningful thresholds (e.g., \(\psi>0.3\)). Given sufficiently informative data, the resulting posterior estimates remain consistent across varying prior beliefs. These results corroborate Pfizer’s original analysis, highlighting that BNT162b2 efficacy remains high across a range of reasonable priors.
 
 
 # Bibliography
@@ -430,6 +525,18 @@ psi_dist <- function(x, shape1, shape2){
   return(dbeta(x = pi, shape1 = shape1, shape2 = shape2))
 }
 ```
+
+```{r re.label = "transform pi to psi and reverse", eval = FALSE}
+pi_transform <- function(psi_val) {
+  (psi_val - 1) / (psi_val - 2)
+}
+
+# Define the transformation function
+psi_transform <- function(pi_val) {
+  (1 - 2 * pi_val) / (1 - pi_val)
+}
+```
+
 
 ## Plots
 ```{r, echo = FALSE}
