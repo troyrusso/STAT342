@@ -213,7 +213,17 @@ $$\Lambda = \frac{L(\hat{\psi}_0^{mle})}{L(\psi_0^{null})}$$
 #likelihood function:
 
 
-#Confidence Interval for Psi
+\subsubsection*{Large Sample Confidence Interval for \(\hat{\psi}\)}
+
+The asymptotic variance of \(\hat{\psi}^{\text{MLE}}\) is derived using the Fisher information of $\hat{\psi}$:
+\[
+I(\psi) = \frac{n}{(1 - \psi)(2 - \psi)^2},
+\]
+where $n$ is the sample size. We construct the Wald confidence interval as follows:
+\[
+\hat{\psi}^{\text{MLE}} \pm z_{\alpha/2} \cdot \frac{1}{\sqrt{n I(\hat{\psi}^{\text{MLE}})}}.
+\]
+This interval assumes large-sample normality of the MLE. We will derive a 95\% confidence interval using our maximum likelihood estimate (MLE).
 
   
 \subsubsection*{Bootstrap Confidence Interval for \(\hat{\psi}_{\mathrm{MLE}}\)}
