@@ -525,6 +525,12 @@ Pfizer   & $`r round(p_psi_pfizer,4)`$ \\
 
 \subsection*{Discussion and Conclusion}
 
+\subsection*{Large Sample Confidence Interval}
+
+The frequentist analysis produced a 95\% confidence interval for vaccine efficacy of (0.947929,0.953306), indicating that, with repeated sampling, 95\% of such intervals would contain the true efficacy. This interval corresponds to an estimated efficacy of 95.0\% (95\% CI: 94.8\%, 95.3\%), which aligns closely with the efficacy reported in the original Pfizer-BioNTech trial (95\% CI: 90.3\%, 97.6\%). However, the narrower interval obtained here reflects the large-sample properties of the Wald method, which uss Fisher information for variance estimation.
+
+The interval's precision is a strength of the frequentist approach, as the large sample size (\(n = 34922\)) justifies the use of asymptotic normality assumptions. While the interval excludes values below 94.8\%, providing strong evidence against low efficacy (\(\psi \leq 30\%\)), its upper bound (95.3\%) is more conservative than the Bayesian credible interval (97.6\%). This discrepancy highlights methodological differences: frequentist intervals quantify long-run coverage probability, whereas Bayesian intervals represent posterior belief.
+
 \subsection*{Bootstrap}
 
 The bootstrap analysis yielded a 95\% confidence interval for $\hat{\psi}$ that closely aligns with our large-sample estimates and remains consistent with Pfizer’s originally reported efficacy range. By resampling from a $\mathrm{Binomial}(n, \hat{\pi})$ distribution, the bootstrap circumvents any strong assumptions about the distribution of $\hat{\psi}$ (beyond the binomial sampling model). This robustness adds credibility to our inference, especially in moderately sized samples where asymptotic approximations can be less reliable.
