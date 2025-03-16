@@ -162,13 +162,9 @@ Describe the statistical model used.
 ## Likelihood Inference
 Detail the likelihood approach.
 
-#likihood function:
-
-#MLE
 
 #Confidence Interval for Psi
 
-  #Large sample confidence interval
   
 \subsubsection*{Bootstrap Confidence Interval for \(\hat{\psi}_{\mathrm{MLE}}\)}
 
@@ -270,18 +266,6 @@ Upper (97.5\%) & `r round(result[2],4)` \\
 \hline
 \end{tabular}
 \end{table}
-
-
-
-
-#Baysian Approach
-
-
-
-
-
-
-  
 
 
 
