@@ -175,7 +175,7 @@ Where $X$ is the observed number of infections where the patient had the vaccine
 
 We can rewrite this likelihood function in terms of $\psi$:
 $$L^*(\psi) = \binom{n}{X}\left(\frac{\psi-1}{\psi-2}\right)^X\left(\frac{-1}{\psi-2}\right)^{n-X}$$
-We know that $0\leq\psi\leq1$, so we can plot $L^*(\psi)$ on this interval, using our observed values $n = 170, x=8$:
+We then find the log-likelihood function. Pictured below is the second degree Taylor approximation of the log-likelihood:
 
 ```{r log_lik_taylor}
 psi_loglik <- function(x){
@@ -193,7 +193,7 @@ plot(ml.binom) +
        x = expression(psi),
        y = "Log-Likelihood")
 ```
-To find the estimate of $\psi$ that maximizes this likelihood function, we found the log likelihood and took the first derivative, a derivation that can be found in the Appendix. our final formula is given by:
+To find the estimate of $\psi$ that maximizes this likelihood function, we took the first derivative and maximized. The whole derivation, from likelihood function to final estimate formula, can be found in the Appendix. Our final formula is given by:
 
 $$\hat{\psi}_0^{mle} = \frac{n-2X}{n-X}$$
 Given our estimate, we now perform a likelihood ratio test to test our hypotheses. We can initially find the likelihood ratio, $\Lambda$. It has formula given by:
@@ -311,10 +311,7 @@ ggplot(data.frame(x = c(0, 1)), aes(x = x)) +
            angle = 270,
            color = "red")
 ```
-
-\subsection*{Likelihood Ratio Test Results}
-
-
+When we performed a likelihood ratio test on our maximum likelihood estimate, we got a value$$W = 121.$$
 
 \subsubsection*{Bootstrap Interval for \(\hat{\psi}\)}
 
