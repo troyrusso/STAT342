@@ -188,7 +188,10 @@ psi_loglik <- function(x){
 ml.binom <- maxLik2(loglik = psi_loglik,
                     start = 0.5)
 
-plot(ml.binom)
+plot(ml.binom) +
+  labs(title = "Second-Degree Taylor Approximation of Log-likelihood Function",
+       x = expression(psi),
+       y = "Log-Likelihood")
 ```
 To find the estimate of $\psi$ that maximizes this likelihood function, we found the log likelihood and took the first derivative, a derivation that can be found in the Appendix. our final formula is given by:
 
