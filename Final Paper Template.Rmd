@@ -17,6 +17,7 @@ library(HDInterval)
 library(dplyr)
 library(binom)
 library(janitor)
+library(fastR2)
 knitr::opts_chunk$set(
   echo = FALSE,      # show code in the output
   warning = FALSE,  # hide warnings
@@ -176,21 +177,18 @@ We can rewrite this likelihood function in terms of $\psi$:
 $$L^*(\psi) = \binom{n}{X}\left(\frac{\psi-1}{\psi-2}\right)^X\left(\frac{-1}{\psi-2}\right)^{n-X}$$
 We know that $0\leq\psi\leq1$, so we can plot $L^*(\psi)$ on this interval, using our observed values $n = 170, x=8$:
 
-```{r likelihood_function_plot, echo = F}
-psi_lik <- function(x){
-  return(choose(170,8)*((x-1)/(x-2))^8*(-1/(x-2))^162)
+```{r log_lik_taylor}
+psi_loglik <- function(x){
+  if(x<0|x>1){
+    return(NA)
+  }
+  return(log(choose(170,8))+8*log((x-1)/(x-2))-162*log(2-x))
 }
 
+ml.binom <- maxLik2(loglik = psi_loglik,
+                    start = 0.5)
 
-
-ggplot(data.frame(x = c(0, 1)), aes(x = x)) +
-  geom_function(fun = psi_lik,
-                color = "blue") +
-  xlim(0.85, 1) +
-  theme_bw()+
-  labs(x = expression(psi),
-       y = expression(L(psi)),
-       title = "Likelihood Function")
+plot(ml.binom)
 ```
 To find the estimate of $\psi$ that maximizes this likelihood function, we found the log likelihood and took the first derivative, a derivation that can be found in the Appendix. our final formula is given by:
 
@@ -287,6 +285,33 @@ Present your findings.
 \subsubsection*{Large sample confidence interval estimate for \(\hat{\psi}\)}
 
 Under the frequentist framework, maximum likelihood estimation (MLE) yielded a vaccine efficacy estimate of 95.0617\% (95\% confidence interval [CI]: 94.7929\%,0.953306\%).
+
+```{r likelihood_function_plot, echo = F}
+psi_lik <- function(x){
+  return(choose(170,8)*((x-1)/(x-2))^8*(-1/(x-2))^162)
+}
+
+ggplot(data.frame(x = c(0, 1)), aes(x = x)) +
+  geom_function(fun = psi_lik,
+                color = "blue") +
+  xlim(0.85, 1) +
+  theme_bw()+
+  labs(x = expression(psi),
+       y = expression(L(psi)),
+       title = "Likelihood Function Plotted with Maximizing Value Marked and Labeled")+
+  geom_vline(xintercept = 154/162,
+             color = "red")+
+  annotate("text",
+           label = paste0("MLE Estimate: ",round(154/162,6)),
+           x = 0.9528,
+           y = 0.05,
+           angle = 270,
+           color = "red")
+```
+
+\subsection*{Likelihood Ratio Test Results}
+
+
 
 \subsubsection*{Bootstrap Interval for \(\hat{\psi}\)}
 
@@ -630,7 +655,22 @@ ggplot()+
   labs(x = expression(x),
        y = expression(f(x)),
        title = "Chi-Squared PDF with Upper Boundary Marked for \n a Significance Level of 0.05")+
-  xlim(0,4)
+  xlim(0,4) +
+  annotate("text",
+           label = paste("Acceptance boundary: x =",
+                         round(qchisq(df=1,
+                                      p=0.95),
+                               3)),
+           x=qchisq(p=0.95,df=1)-0.1,
+           y=1,
+           angle = 90,
+           color = "red",
+           size = 4)+
+  annotate("text",
+           label = expression(chi[1]^2),
+           x = 0.20,
+           y = 1.75)
+          
 ```
 
 ## Proofs
