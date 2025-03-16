@@ -77,22 +77,6 @@ Total     & 170 & 34,922  \\
 \end{tabular}
 \end{table}
 
-
-```{r}
-orig_data <- data.frame(Group = c(rep("Vaccine",17411),
-                                  rep("Placebo",17511)),
-                        infect = c(rep("Infected",8),
-                                   rep("Not Infected",17403),
-                                   rep("Infected",162),
-                                   rep("Not Infected",17349)))
-
-orig_data %>%
-  tabyl(Group,infect) %>%
-  adorn_totals(c("row","col"))%>%
-  adorn_title(col_name ="Original Clinical Data")
-  
-```
-
 The present study reanalyzes these data Table 1 using both Bayesian and frequentist approaches. The primary goals are to: (1) estimate VE and associated uncertainty under each framework, (2) compare the resulting efficacy point and interval estimates, and (3) evaluate the posterior probability (Bayesian) and p-values (frequentist) for the hypothesis that VE exceeds 30\%. Our hypotheses are as follows:
 
 
@@ -173,24 +157,25 @@ knitr::kable(VE_table,
 # Statistical Methods
 
 ## Model
-  The experiment uses a binomial model targeting 170 infections. $\pi$, the probability measure of this model, estimates the proportion of infected individuals that had received the vaccination. Because we are using a Binomial method, we are making assumptions that should be checked. We target 170 infections, so the constant trials assumption is met. Either the infected person received the vaccine or the placebo, so the assumption of only two outcomes is met. The parameter we are estimating, $\pi$, is assumed to have some unknown true value, an assumption we cannot strictly verify, but is reasonable to believe. Lastly, we assume that our observations are independent, which we once again cannot strictly verify, but given our large sample size and the number of individuals involved in the survey (*add number here*), this is a reasonable assumption. Thus, taking $X$ to be the number of infections out of 170 where the patient is vaccinated, our experimental model is:
+  The experiment uses a binomial model targeting 170 infections. $\pi$, the probability measure of this model, estimates the proportion of infected individuals that had received the vaccination. Because we are using a Binomial method, we are making assumptions that should be checked. We target 170 infections, so the constant trials assumption is met. Either the infected person received the vaccine or the placebo, so the assumption of only two outcomes is met. The parameter we are estimating, $\pi$, is assumed to have some unknown true value, an assumption we cannot strictly verify, but is reasonable to believe. Lastly, we assume that our observations are independent, which we once again cannot strictly verify, but given our large sample size and the number of individuals involved in the survey, along with the fact that each participant's group was chosen randomly, this is a reasonable assumption. Thus, taking $X$ to be the number of infections out of 170 where the patient is vaccinated, our experimental model is:
   $$X \sim Bin(170, \pi)$$
 
   However, the parameter that we are more interested in making inference on is $\psi$, which represents the efficacy of the vaccine. This parameter is calculated as
-  $$\psi = \frac{1-2\pi}{1-\pi}$$ **Cite Result from Introduction**
-It is on this parameter that we are interested in making inference and drawing conclusions. Notably, the FDA (Food and Drug Administration) requires that in order for a drug to be released for wholesale production and use, it must be shown to have an efficacy greater than $0.3$. Thus, our hypothesis tests will test how statistically significant the evidence is that the vaccine has an efficacy greater than $0.3$.
+  $$\psi = \frac{1-2\pi}{1-\pi}$$
+Notably, the FDA (Food and Drug Administration) requires that in order for a drug to be released for wholesale production and use, it must be shown to have an efficacy greater than $0.3$. Thus, our hypothesis tests will test how statistically significant the evidence is that the vaccine has an efficacy greater than $0.3$.
 $$H_0: \psi = 0.3;\ \ \   H_1: \psi \neq 0.3$$
-We use two statistical methods to make this analysis: the Frequentist maximum likelihood method, and the Bayesian inference method.
+We use two statistical methods to make this analysis: the frequentist maximum likelihood method, and the bayesian inference method.
 
 ## Likelihood Inference
-We can begin with the Likelihood function. Recall that the design of our experiment is binomial; we observe 170 infections and try to make inference on $\pi$, the proportion of infections from those who have the vaccine. Assuming each observation is independent (which we have justified above), we can write our likelihood function in terms of $\pi$:
+We can begin with the likelihood function. Recall that the design of our experiment is binomial; we observe 170 infections and try to make inference on $\pi$, the proportion of infections from those who have the vaccine. Assuming each observation is independent (which we have justified above), we can write our likelihood function in terms of $\pi$:
 $$L(\pi) = \binom{170}{X}(\pi)^X(1-\pi)^{170-X}$$
-Where $x$ is the observed number of infections where the patient had the vaccine.
+Where $X$ is the observed number of infections where the patient had the vaccine.
 
 
 We can rewrite this likelihood function in terms of $\psi$:
 $$L^*(\psi) = \binom{n}{X}\left(\frac{\psi-1}{\psi-2}\right)^X\left(\frac{-1}{\psi-2}\right)^{n-X}$$
 We know that $0\leq\psi\leq1$, so we can plot $L^*(\psi)$ on this interval, using our observed values $n = 170, x=8$:
+
 ```{r likelihood_function_plot, echo = F}
 psi_lik <- function(x){
   return(choose(170,8)*((x-1)/(x-2))^8*(-1/(x-2))^162)
@@ -207,13 +192,15 @@ ggplot(data.frame(x = c(0, 1)), aes(x = x)) +
 ```
 To find the estimate of $\psi$ that maximizes this likelihood function, we found the log likelihood and took the first derivative, a derivation that can be found in the Appendix. our final formula is given by:
 
-$$\text{Put Final Formula Here}$$
-Given our estimate, we now want to perform a likelihood ratio test on which to test our hyhpotheses. We can initially find the likelihood ratio, $\Lambda$. It has formula given by:
+$$\hat{\psi}_0^{mle} = \frac{n-2X}{n-X}$$
+Given our estimate, we now perform a likelihood ratio test to test our hypotheses. We can initially find the likelihood ratio, $\Lambda$. It has formula given by:
 $$\Lambda = \frac{L(\hat{\psi}_0^{mle})}{L(\psi_0^{null})}$$
+
+Once we have calculated $\Lambda$, we can go forward with calculating $W$, which has formula given by:
+$$W = 2\log(\Lambda)$$
+$W$ is especially helpful for making inference, because under the null hypothesis, $W \sim \chi_1^2$. Thus, we can use the value of $W$ to find a p-value to evaluate our hypothesis, based on where it falls in the distribution of $\chi_1^2$. For reference, a plot of the chi-squared distribution with 1 degree of freedom is given in the Appendix, marked with the boundary value(s) beyond which we reject our null hypothesis.
 #likelihood function:
 
-
-\subsubsection*{Large Sample Confidence Interval for \(\hat{\psi}\)}
 
 The asymptotic variance of \(\hat{\psi}^{\text{MLE}}\) is derived using the Fisher information of $\hat{\psi}$:
 \[
