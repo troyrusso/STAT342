@@ -285,7 +285,9 @@ where $F_\pi$ is the posterior cumulative distribution function of $\pi$. In pra
 # Results
 Present your findings. 
 
+\subsubsection*{Large sample confidence interval estimate for \(\hat{\psi}\)}
 
+Under the frequentist framework, maximum likelihood estimation (MLE) yielded a vaccine efficacy estimate of 95.0617\% (95\% confidence interval [CI]: 94.7929\%,0.953306\%).
 
 \subsubsection*{Bootstrap Interval for \(\hat{\psi}\)}
 
