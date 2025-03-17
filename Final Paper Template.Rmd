@@ -515,7 +515,7 @@ H_0: \psi \le 0.3
 \quad \text{vs.} \quad 
 H_1: \psi > 0.3.
 \]
-(This threshold can be changed as needed, depending on your target efficacy.) Table~\ref{tab:bayes-hypothesis-psi} shows these values. We define
+We define
 \[
 p\text{-value} = P(\psi \le 0.3),
 \]
