@@ -42,7 +42,7 @@ psi_transform <- function(pi_val) {
 ```
 
 # Abstract
-Write your abstract here.
+The COVID-19 pandemic emphasized the need for vaccine development, with Pfizer’s BNT162b2 mRNA vaccine demonstrating 95% efficacy in clinical trials. This study reanalyzes the trial data using frequentist and Bayesian frameworks to estimate vaccine efficacy and evaluate hypotheses. Frequentist methods employed maximum likelihood estimation (MLE) and parametric bootstrap confidence intervals, while Bayesian analysis utilized Beta priors to model vaccine efficacy. Both approaches yielded vaccine efficacy estimates exceeding 94.8%, with Bayesian credible intervals (e.g., 90.3–97.6% under the original prior) slightly wider than frequentist confidence intervals (94.8–95.3%). Likelihood ratio and posterior probability tests overwhelmingly rejected the null hypothesis (vaccine efficacy ≤ 30%) with p-values < 0.0001. Results confirm BNT162b2’s high efficacy and highlight methodological nuances: Bayesian intervals incorporated prior evidence, whereas frequentist methods provided precise, assumption-driven estimates. Despite differing uncertainty quantification, both frameworks strongly supported the vaccine’s effectiveness, reinforcing confidence in the vaccine.
 
 
 # Keywords
@@ -51,7 +51,6 @@ Write your abstract here.
 \newpage
 
 # Introduction / Background
-\section*{Introduction}
 The COVID-19 pandemic, caused by the coronavirus SARS-CoV-2, has had a massive global impact since it first emerged in late 2019, affecting health, economies, and daily life worldwide. Developing safe and effective vaccines quickly became crucial to help curb the spread and reduce severe illness. One of the earliest breakthroughs was the mRNA-based BNT162b2 vaccine from Pfizer and BioNTech, which showed impressive efficacy in clinical trials (Polack et al., 2021). By December 2020, the U.S. Food and Drug Administration (FDA) granted Emergency Use Authorization (EUA) for BNT162b2 (FDA, 2020)—a major turning point in fighting the pandemic. This authorization was supported by data from a phase 2/3 randomized, placebo-controlled trial involving over 34,000 participants, which reported a 95\% vaccine efficacy (VE) against symptomatic COVID-19 (Polack et al., 2021).
 
 Vaccine efficacy trials rely on rigorous statistical frameworks to evaluate the reduction in disease risk between vaccinated and unvaccinated groups. Traditional frequentist methods, such as confidence intervals and p-values, have long dominated clinical trial analyses. However, Bayesian approaches are increasingly employed for their ability to incorporate prior evidence and provide probabilistic interpretations of efficacy (Berry et al., 2006). The original BNT162b2 trial used a Bayesian beta-binomial model with a Beta(0.700102, 1) prior to estimate VE, defined as 
@@ -508,7 +507,7 @@ Pfizer   & $`r round(p_psi_pfizer,4)`$ \\
 
 \subsection*{Large Sample Confidence Interval}
 
-The frequentist analysis produced a 95\% confidence interval for vaccine efficacy of (0.947929,0.953306), indicating that, with repeated sampling, 95\% of such intervals would contain the true efficacy. This interval corresponds to an estimated efficacy of 95.0\% (95\% CI: 94.8\%, 95.3\%), which aligns closely with the efficacy reported in the original Pfizer-BioNTech trial (95\% CI: 90.3\%, 97.6\%). However, the narrower interval obtained here reflects the large-sample properties of the Wald method, which uss Fisher information for variance estimation.
+The frequentist analysis produced a 95\% confidence interval for vaccine efficacy of (0.947929,0.953306), indicating that, with repeated sampling, 95\% of such intervals would contain the true efficacy. This interval corresponds to an estimated efficacy of 95.0\% (95\% CI: 94.8\%, 95.3\%), which aligns closely with the efficacy reported in the original Pfizer-BioNTech trial (95\% CI: 90.3\%, 97.6\%). However, the narrower interval obtained here reflects the large-sample properties of the Wald method, which uses Fisher information for variance estimation.
 
 The interval's precision is a strength of the frequentist approach, as the large sample size (\(n = 34922\)) justifies the use of asymptotic normality assumptions. While the interval excludes values below 94.8\%, providing strong evidence against low efficacy (\(\psi \leq 30\%\)), its upper bound (95.3\%) is more conservative than the Bayesian credible interval (97.6\%). This discrepancy highlights methodological differences: frequentist intervals quantify long-run coverage probability, whereas Bayesian intervals represent posterior belief.
 
