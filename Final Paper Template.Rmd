@@ -9,6 +9,7 @@ header-includes:
 - \usepackage{setspace} \doublespacing
 - \usepackage{titling}
 - \setlength{\droptitle}{-2cm}
+- \usepackage{enumitem}
 
 fontsize: 11pt
 ---
@@ -82,15 +83,11 @@ Total     & 170 & 34,922  \\
 \end{table}
 
 The present study reanalyzes these data Table 1 using both Bayesian and frequentist approaches. The primary goals are to: (1) estimate VE and associated uncertainty under each framework, (2) compare the resulting efficacy point and interval estimates, and (3) evaluate the posterior probability (Bayesian) and p-values (frequentist) for the hypothesis that VE exceeds 30\%. Our hypotheses are as follows:
-
-
-\noindent\textbf{Hypotheses:}
-\begin{itemize}
-\item Both frameworks will confirm high VE ($>$90\%) for BNT162b2
-\item Uncertainty intervals will differ modestly between methods
-\item Both analyses will reject the null hypothesis (VE $\leq$ 30\%) with overwhelming evidence
+\begin{itemize}[noitemsep,topsep=0pt]
+  \item Both frameworks will confirm high VE ($>90\%$) for BNT162b2
+  \item Uncertainty intervals will differ modestly between methods
+  \item Both analyses will reject the null hypothesis (VE $\le 0.3$) with overwhelming evidence
 \end{itemize}
-
 This comparative analysis not only reinforces confidence in BNT162b2's efficacy but also highlights the complementary strengths of Bayesian and frequentist statistics in public health research.
 
 
@@ -212,7 +209,7 @@ p + geom_line(
       color = "red",
       size  = 1
     ) +
-  coord_cartesian(xlim = c(0.9,1),ylim = c(-100, 5)) # adjust as needed to see the full curve
+  coord_cartesian(xlim = c(0.9,1),ylim = c(-25, 5)) # adjust as needed to see the full curve
 ```
 ```{r log_lik_taylor2, fig.width=4, fig.height=3, echo=FALSE, fig.align="center", eval = FALSE}
 psi_loglik <- function(x){
