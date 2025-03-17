@@ -294,18 +294,18 @@ ggplot(data.frame(x = c(0, 1)), aes(x = x)) +
   theme_bw()+
   labs(x = expression(psi),
        y = expression(L(psi)),
-       title = "Likelihood Function Plotted with Maximizing Value Marked and Labeled")+
+       title = "Likelihood Function Plotted with \nMaximizing Value Marked and Labeled")+
   geom_vline(xintercept = 154/162,
              color = "red")+
   annotate("text",
            label = paste0("MLE Estimate: ",round(154/162,6)),
-           x = 0.9528,
+           x = 0.9548,
            y = 0.05,
            angle = 270,
            color = "red")
 ```
 When we performed a likelihood ratio test on our maximum likelihood estimate, we got the value$$W = 121.6012$$
-The p-value associated with this value of $W$ is $\sim0$.
+The p-value associated with this value of $W$ is $\approx0$.
 \subsubsection*{Bootstrap Interval for \(\hat{\psi}\)}
 
 ```{r, echo= FALSE}
@@ -504,7 +504,7 @@ Pfizer   & $`r round(p_psi_pfizer,4)`$ \\
 
 \subsection*{Discussion and Conclusion}
 
-\subsection*{Large Sample Confidence Interval}
+\subsection*{Frequentist Maximum Likelihood Anaylsis}
 
 The frequentist maximum likelihood estimation yields an estimate of 0.9506, which is significantly higher than the value we are testing against, 0.3. In testing the statistical significance of this result, the likelihood ratio test obtains the value $W = 121.6012$. Considering under the null hypothesis, $W\sim\chi_1^2$, which has expected value 1 and variance 2, this value is extraordinarily high, and it is thus no surprise that we get a p-value that approximates 0. We thus reject the null hypothesis that the true value of our parameter $\psi$ is equal to $0.3$. This is right in line with the extremity of our estimate and the magnitude of the difference between it and the baseline we test against. It is also in agreement with the results achieved by the large sample confidence interval, as well as the results yielded by the bayesian analysis. In fact, we could declare any value less than 0.906 for baseline requirement and our data would still constitute statistically significant evidence at the significance level of $\alpha = 0.05$ that the vaccine has a high enough efficacy (See Appendix for plot).
 
@@ -660,8 +660,6 @@ ggplot()+
           
 ```
 
-Because our observed likelihood ratio p-value is so astronomically low, we might be interested in knowing what would be the highest value we could take to be our null assumption for $\psi$, and still get a p-value lower than 0.05. We can create a plot that visualizes this:
-
 ```{r, echo = FALSE}
 pval_null <- function(x){
   return(1 - pchisq(df = 1,
@@ -709,9 +707,8 @@ ggplot()+
 This yields that if our null value were to change, our data would still constitute statistically significant evidence at a significance level 0.05 sufficent to reject the null hypothesis.
 
 ## Proofs
-If applicable, include detailed mathematical derivations or additional theoretical explanations.
 
-Proof of the Maximum Likelihood Estimator for $\widehat{\psi}_0^{mle}$:
+Dericvation of the Maximum Likelihood Estimator for $\widehat{\psi}_0^{mle}$:
 
 We can begin with our Likelihood function
 $$L(\pi) = \binom{n}{X}(\pi)^X(1-\pi)^{170-X}$$
@@ -734,7 +731,7 @@ $$n\hat{\psi}_0^{mle} - n = X\hat{\psi}_0^{mle} - 2X$$
 $$(n-X)\hat{\psi}_0^{mle} = n-2X$$
 $$\hat{\psi}_0^{mle} = \frac{n-2X}{n-X}$$
 
-Proof of Likelihood Ratio Test Value:
+Derivation of Likelihood Ratio Test Value:
 
 Recall that when performing a hypothesis test for a maximum likelihood estimator, we are interested in calculating $W$, which is given by
 $$W = 2\ln\left[\frac{L(\hat{\psi}_0^{mle})}{L(\psi_0^{null})}\right]$$
