@@ -168,7 +168,7 @@ $$H_0: \psi = 0.3;\ \ \   H_1: \psi \neq 0.3$$
 We use two statistical methods to make this analysis: the frequentist maximum likelihood method, and the bayesian inference method.
 
 ## Likelihood Inference
-We can begin with the likelihood function. Recall that the design of our experiment is binomial; we observe 170 infections and try to make inference on $\pi$, the proportion of infections from those who have the vaccine. Assuming each observation is independent (which we have justified above), we can write our likelihood function in terms of $\pi$:
+Recall that the design of our experiment is binomial; we observe 170 infections and try to make inference on $\pi$, the proportion of infections from those who have the vaccine. Assuming each observation is independent (which we have justified above), we can write our likelihood function in terms of $\pi$:
 $$L(\pi) = \binom{170}{X}(\pi)^X(1-\pi)^{170-X}$$
 Where $X$ is the observed number of infections where the patient had the vaccine.
 
@@ -227,10 +227,10 @@ plot(ml.binom) +
        x = expression(psi),
        y = "Log-Likelihood")
 ```
-To find the estimate of $\psi$ that maximizes this likelihood function, we took the first derivative and maximized. The whole derivation, from likelihood function to final estimate formula, can be found in the Appendix. Our final formula is given by:
+To maximize this likelihood function, we take the first derivative and set it equal to 0. The whole derivation, from likelihood function to final estimate formula, can be found in the Appendix. Our final formula is given by:
 
 $$\hat{\psi}_0^{mle} = \frac{n-2X}{n-X}$$
-Given our estimate, we now perform a likelihood ratio test to test our hypotheses. We can initially find the likelihood ratio, $\Lambda$. It has formula given by:
+We now perform a likelihood ratio test to test our hypotheses. We can initially find the likelihood ratio, $\Lambda$. It has formula given by:
 $$\Lambda = \frac{L(\hat{\psi}_0^{mle})}{L(\psi_0^{null})}$$
 
 Once we have calculated $\Lambda$, we can go forward with calculating $W$, which has formula given by:
@@ -541,9 +541,9 @@ Pfizer   & $`r round(p_psi_pfizer,4)`$ \\
 
 \subsection*{Frequentist Maximum Likelihood Anaylsis}
 
-The frequentist maximum likelihood estimation yields an estimate of 0.9506, which is significantly higher than the value we are testing against, 0.3. In testing the statistical significance of this result, the likelihood ratio test obtains the value $W = 121.6012$. Considering under the null hypothesis, $W\sim\chi_1^2$, which has expected value 1 and variance 2, this value is extraordinarily high, and it is thus no surprise that we get a p-value that approximates 0. We thus reject the null hypothesis that the true value of our parameter $\psi$ is equal to $0.3$. This is right in line with the extremity of our estimate and the magnitude of the difference between it and the baseline we test against. It is also in agreement with the results achieved by the large sample confidence interval, as well as the results yielded by the bayesian analysis. In fact, we could declare any value less than 0.906 for minimum efficacy and our data would still constitute statistically significant evidence at the significance level of $\alpha = 0.05$ that the vaccine has a high enough efficacy (See Appendix for plot).
+The frequentist maximum likelihood estimation yields an estimate of 0.9506, which is significantly higher than the value we are testing against, 0.3. In testing the statistical significance of this result, the likelihood ratio test obtains the value $W = 121.6012$. Considering under the null hypothesis, $W\sim\chi_1^2$, which has expected value 1 and variance 2, this value is extraordinarily high, and it is thus no surprise that we get a p-value that approximates 0. Interestingly, because the p-value is so low, we could declare any value less than 0.906 for minimum baseline efficacy and our data would still constitute statistically significant evidence at the significance level of $\alpha = 0.05$ that the vaccine's efficacy is higher (See Appendix for plot). We thus reject the null hypothesis that the true value of our parameter $\psi$ is equal to $0.3$. This is right in line with the results achieved by the large sample confidence interval, as well as the results yielded by the bayesian analysis. 
 
-The frequentist analysis produced a 95\% confidence interval for vaccine efficacy of (0.947929,0.953306), indicating that, with repeated sampling, 95\% of such intervals would contain the true efficacy. This interval corresponds to the estimated efficacy of 95.0\% (95\% CI: 94.8\%, 95.3\%), which aligns closely with the efficacy reported in the original Pfizer-BioNTech trial (95\% CI: 90.3\%, 97.6\%). However, the narrower interval obtained here reflects the large-sample properties of the Wald method, which uss Fisher information for variance estimation.
+The frequentist analysis produced a 95\% confidence interval for vaccine efficacy of (0.947929,0.953306), indicating that, with repeated sampling, 95\% of such intervals would contain the true efficacy. This interval corresponds to the estimated efficacy of 95.0\% (95\% CI: 94.8\%, 95.3\%), which aligns closely with the efficacy reported in the original Pfizer-BioNTech trial (95\% CI: 90.3\%, 97.6\%). However, the narrower interval obtained here reflects the large-sample properties of the Wald method.
 
 The interval's precision is a strength of the frequentist approach, as the large sample size (\(n = 34922\)) justifies the use of asymptotic normality assumptions. While the interval excludes values below 94.8\%, providing strong evidence against low efficacy (\(\psi \leq 30\%\)), its upper bound (95.3\%) is more conservative than the Bayesian credible interval (97.6\%). This discrepancy highlights methodological differences: frequentist intervals quantify long-run coverage probability, whereas Bayesian intervals represent posterior belief.
 
