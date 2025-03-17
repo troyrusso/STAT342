@@ -348,10 +348,6 @@ Upper (97.5\%) & `r round(result[2],4)` \\
 
 
 
-
-\noindent \textbf{Prior and Posterior Distributions.}
-Figure 1 compares the initial priors for the Pfizer analysis (Beta$(0.700102,1)$) and our two alternative priors (Beta$(43.04,43.04)$ and Beta$(85.63,85.63)$). As shown, the Pfizer prior places more mass toward large values of $\psi$, whereas the alternative priors are more tightly concentrated around $\psi=0.25$. After observing $t=8$ infections out of $n=170$ total participants in the vaccine group (see data in table 1), these priors update to yield the posterior distributions shown in Figure 1. 
-
 ```{r, echo = FALSE}
 library(LearnBayes)
 prior1Beta <- beta.select(quantile1 = list(p=0.05, x = 7/17),
@@ -389,7 +385,7 @@ args = list(shape1 = 85.63 + 8, shape2 = 162 + 85.63),
 xlim=c(0,1)) +
 scale_color_manual(name = "dist", 
                    values = c("Pfizer" = "blue", "0.05" = "red", "0.01" = "black"))+
-labs(title = "Priors and Posteriors",
+labs(title = "Prior and Posterior Distributions",
 x=expression(pi),
 y = "PDF")
 
