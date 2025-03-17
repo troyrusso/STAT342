@@ -570,13 +570,6 @@ Finally, \textbf{Table~4} presents Bayesian p-values for testing a clinically re
 
 Overall, the Bayesian framework yields direct probability statements about clinically meaningful thresholds (e.g., \(\psi>0.3\)). Given sufficiently informative data, the resulting posterior estimates remain consistent across varying prior beliefs. These results corroborate Pfizer’s original analysis, highlighting that BNT162b2 efficacy remains high across a range of reasonable priors.
 
-\subsection*{Discussion}
-
-Both frequentist and Bayesian frameworks affirmed BNT162b2's high efficacy, with point estimates exceeding 94.8\% and overwhelming statistical evidence against the null hypothesis ($\psi \leq 30\%$). Frequentist $p$-values ($<0.0001$) and Bayesian posterior probabilities ($>99.99\%$) aligned in rejecting $H_0$, corroborating Pfizer’s original findings. 
-
-Strengths of the Bayesian approach included explicit usage of prior belief and probabilistic efficacy interpretations, whereas frequentist methods provided precise, assumption-driven estimates. However, Bayesian results exhibited mild sensitivity to prior choice, and frequentist intervals relied on large-sample approximations. Despite these trade-offs, the similar conclusion from the results across frameworks reinforced confidence in BNT162b2’s efficacy. 
-
-
 # Bibliography
 
 Baden, L.R., et al. (2021). \textit{N. Engl. J. Med.}, 384(5), 403–416.
