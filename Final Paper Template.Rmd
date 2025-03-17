@@ -306,53 +306,6 @@ ggplot(data.frame(x = c(0, 1)), aes(x = x)) +
 ```
 When we performed a likelihood ratio test on our maximum likelihood estimate, we got the value$$W = 121.6012$$
 The p-value associated with this value of $W$ is $\sim0$.
-
-Because this value is so astronomically low, we might be interested in knowing what would be the highest value we could take to be our null assumption for $\psi$, and still get a p-value lower than 0.05. We can create a plot that visualizes this:
-```{r}
-pval_null <- function(x){
-  return(1 - pchisq(df = 1,
-                    q = 16*log(((154/162)-1)/(x-1))+340*log((x-2)/((154/162)-2))))
-}
-
-upp_val <- uniroot(f = function(x){pval_null(x)-0.05}, 
-                   lower = 0.5,
-                   upper = 0.95)
-
-ggplot()+
-  geom_function(fun = pval_null,
-                color = "black")+
-  xlim(0,0.91)+
-  geom_hline(yintercept = 0.05,
-             color = "red",
-             linetype = 2)+
-  geom_vline(xintercept = 0.3,
-             color = "blue",
-             linetype = 2)+
-  geom_vline(xintercept = upp_val$root,
-             color = "darkblue",
-             linetype =2)+
-  annotate("text",
-           label = "Significance level 0.05",
-           x = 0.1,
-           y = 0.052,
-           color = "red")+
-  annotate("text",
-           label = "Initial null value: 0.3",
-           x = 0.315,
-           y = 0.03,
-           angle = 270,
-           color = "blue")+
-  annotate("text",
-           label = "Highest null value below 0.05: 0.9061",
-           x = 0.715,
-           y = 0.0485,
-           color = "darkblue")+
-  theme_bw()+
-  labs(x = "Null value",
-       y = "P-value",
-       title = "Potential Null Value vs. Calculated P-value")
-```
-
 \subsubsection*{Bootstrap Interval for \(\hat{\psi}\)}
 
 ```{r, echo= FALSE}
@@ -553,7 +506,7 @@ Pfizer   & $`r round(p_psi_pfizer,4)`$ \\
 
 \subsection*{Large Sample Confidence Interval}
 
-The frequentist maximum likelihood estimation yields an estimate of 0.9506, which is significantly higher than the value we are testing against, 0.3. In testing the statistical significance of this result, the likelihood ratio test obtains the value $W = 121.6012$. Considering under the null hypothesis, $W\sim\chi_1^2$, which has expected value 1 and variance 2, this value is extraordinarily high, and it is thus no surprise that we get a p-value that approximates 0. We thus reject the null hypothesis that the true value of our parameter $\psi$ is equal to $0.3$. This is right in line with the extremity of our estimate and the magnitude of the difference between it and the baseline we test against. It is also in agreement with the results achieved by the large sample confidence interval, as well as the results yielded by the bayesian analysis. In fact, we could declare any value less than 0.906 for baseline requirement and our data would still constitute statistically significant evidence at the significance level of $\alpha = 0.05$ that the vaccine has a high enough efficacy.
+The frequentist maximum likelihood estimation yields an estimate of 0.9506, which is significantly higher than the value we are testing against, 0.3. In testing the statistical significance of this result, the likelihood ratio test obtains the value $W = 121.6012$. Considering under the null hypothesis, $W\sim\chi_1^2$, which has expected value 1 and variance 2, this value is extraordinarily high, and it is thus no surprise that we get a p-value that approximates 0. We thus reject the null hypothesis that the true value of our parameter $\psi$ is equal to $0.3$. This is right in line with the extremity of our estimate and the magnitude of the difference between it and the baseline we test against. It is also in agreement with the results achieved by the large sample confidence interval, as well as the results yielded by the bayesian analysis. In fact, we could declare any value less than 0.906 for baseline requirement and our data would still constitute statistically significant evidence at the significance level of $\alpha = 0.05$ that the vaccine has a high enough efficacy (See Appendix for plot).
 
 The frequentist analysis produced a 95\% confidence interval for vaccine efficacy of (0.947929,0.953306), indicating that, with repeated sampling, 95\% of such intervals would contain the true efficacy. This interval corresponds to the estimated efficacy of 95.0\% (95\% CI: 94.8\%, 95.3\%), which aligns closely with the efficacy reported in the original Pfizer-BioNTech trial (95\% CI: 90.3\%, 97.6\%). However, the narrower interval obtained here reflects the large-sample properties of the Wald method, which uss Fisher information for variance estimation.
 
@@ -677,7 +630,7 @@ y = "PDF")
 
 ```
 
-```{r}
+```{r, echo = FALSE}
 ggplot()+
   stat_function(fun = dchisq,
                 args = list(df=1),
@@ -706,6 +659,54 @@ ggplot()+
            y = 1.75)
           
 ```
+
+Because our observed likelihood ratio p-value is so astronomically low, we might be interested in knowing what would be the highest value we could take to be our null assumption for $\psi$, and still get a p-value lower than 0.05. We can create a plot that visualizes this:
+
+```{r, echo = FALSE}
+pval_null <- function(x){
+  return(1 - pchisq(df = 1,
+                    q = 16*log(((154/162)-1)/(x-1))+340*log((x-2)/((154/162)-2))))
+}
+
+upp_val <- uniroot(f = function(x){pval_null(x)-0.05}, 
+                   lower = 0.5,
+                   upper = 0.95)
+
+ggplot()+
+  geom_function(fun = pval_null,
+                color = "black")+
+  xlim(0,0.91)+
+  geom_hline(yintercept = 0.05,
+             color = "red",
+             linetype = 2)+
+  geom_vline(xintercept = 0.3,
+             color = "blue",
+             linetype = 2)+
+  geom_vline(xintercept = upp_val$root,
+             color = "darkblue",
+             linetype =2)+
+  annotate("text",
+           label = "Significance level 0.05",
+           x = 0.1,
+           y = 0.052,
+           color = "red")+
+  annotate("text",
+           label = "Initial null value: 0.3",
+           x = 0.315,
+           y = 0.03,
+           angle = 270,
+           color = "blue")+
+  annotate("text",
+           label = "Highest null value below 0.05: 0.9061",
+           x = 0.695,
+           y = 0.0485,
+           color = "darkblue")+
+  theme_bw()+
+  labs(x = "Null value",
+       y = "P-value",
+       title = "Potential Null Value vs. Calculated P-value")
+```
+This yields that if our null value were to change, our data would still constitute statistically significant evidence at a significance level 0.05 sufficent to reject the null hypothesis.
 
 ## Proofs
 If applicable, include detailed mathematical derivations or additional theoretical explanations.
