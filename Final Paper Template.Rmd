@@ -42,7 +42,7 @@ psi_transform <- function(pi_val) {
 ```
 
 # Abstract
-Write your abstract here.
+The COVID-19 pandemic emphasized the need for vaccine development, with Pfizer's BNT162b2 mRNA vaccine demonstrating 95\% efficacy in clinical trials. This study reanalyzes the trial data using frequentist and Bayesian frameworks to estimate vaccine efficacy and evaluate hypotheses. Frequentist methods employed maximum likelihood estimation (MLE) and parametric bootstrap confidence intervals, while Bayesian analysis utilized Beta priors to model vaccine efficacy. Both approaches yielded vaccine efficacy estimates exceeding 94.8\%, with Bayesian credible intervals (e.g., 90.3--97.6\% under the original prior) slightly wider than frequentist confidence intervals (94.8--95.3\%). Likelihood ratio and posterior probability tests overwhelmingly rejected the null hypothesis (vaccine efficacy $\leq$ 30\%) with \textit{p}-values $<$ 0.0001. Results confirm BNT162b2's high efficacy and highlight methodological nuances: Bayesian intervals incorporated prior evidence, whereas frequentist methods provided precise, assumption-driven estimates. Despite differing uncertainty quantification, both frameworks strongly supported the vaccine's effectiveness, reinforcing confidence in the vaccine.
 
 
 # Keywords
@@ -51,7 +51,6 @@ Write your abstract here.
 \newpage
 
 # Introduction / Background
-\section*{Introduction}
 The COVID-19 pandemic, caused by the coronavirus SARS-CoV-2, has had a massive global impact since it first emerged in late 2019, affecting health, economies, and daily life worldwide. Developing safe and effective vaccines quickly became crucial to help curb the spread and reduce severe illness. One of the earliest breakthroughs was the mRNA-based BNT162b2 vaccine from Pfizer and BioNTech, which showed impressive efficacy in clinical trials (Polack et al., 2021). By December 2020, the U.S. Food and Drug Administration (FDA) granted Emergency Use Authorization (EUA) for BNT162b2 (FDA, 2020)—a major turning point in fighting the pandemic. This authorization was supported by data from a phase 2/3 randomized, placebo-controlled trial involving over 34,000 participants, which reported a 95\% vaccine efficacy (VE) against symptomatic COVID-19 (Polack et al., 2021).
 
 Vaccine efficacy trials rely on rigorous statistical frameworks to evaluate the reduction in disease risk between vaccinated and unvaccinated groups. Traditional frequentist methods, such as confidence intervals and p-values, have long dominated clinical trial analyses. However, Bayesian approaches are increasingly employed for their ability to incorporate prior evidence and provide probabilistic interpretations of efficacy (Berry et al., 2006). The original BNT162b2 trial used a Bayesian beta-binomial model with a Beta(0.700102, 1) prior to estimate VE, defined as 
@@ -95,7 +94,7 @@ This comparative analysis not only reinforces confidence in BNT162b2's efficacy 
 # You can reference your code in the appendix (sample here).
 ```
 
-```{r}
+```{r fig.width=4, fig.height=3, echo=FALSE, fig.align="center"}
 # Summary data from the paper:
 # For participants without evidence of infection:
 # Group       Cases    SampleSize
@@ -177,7 +176,7 @@ We can rewrite this likelihood function in terms of $\psi$:
 $$L^*(\psi) = \binom{n}{X}\left(\frac{\psi-1}{\psi-2}\right)^X\left(\frac{-1}{\psi-2}\right)^{n-X}$$
 We then find the log-likelihood function. Pictured below is the second degree Taylor approximation of the log-likelihood:
 
-```{r log_lik_taylor}
+```{r log_lik_taylor, fig.width=4, fig.height=3, echo=FALSE, fig.align="center"}
 psi_loglik <- function(x){
   if(x<0|x>1){
     return(NA)
@@ -217,11 +216,7 @@ This interval assumes large-sample normality of the MLE. We will derive a 95\% c
   
 \subsubsection*{Bootstrap Confidence Interval for \(\hat{\psi}_{\mathrm{MLE}}\)}
 
-In addition to the large-sample interval, we use a computational bootstrap approach to estimate a 95\% confidence interval for \(\hat{\psi}_{\mathrm{MLE}}\). Suppose we observe
-\[
-\hat{\pi} = \frac{T}{n}
-\]
-from the sample, where \(T\) is the observed number of infections out of \(n\) participants. Then:
+In addition to the large-sample interval, we use a computational bootstrap approach to estimate a 95\% confidence interval for \(\hat{\psi}_{\mathrm{MLE}}\). Suppose we observe $\hat{\pi} = \frac{T}{n}$ from the sample, where \(T\) is the observed number of infections out of \(n\) participants. Then:
 
 \begin{enumerate}
     \item \textbf{Generate Resamples.} We repeatedly sample \(T^*\) from a \(\mathrm{Binomial}(n, \hat{\pi})\) distribution. For each bootstrap draw:
@@ -282,13 +277,12 @@ where $F_\pi$ is the posterior cumulative distribution function of $\pi$. In pra
 
 
 # Results
-Present your findings. 
 
 \subsubsection*{Large sample confidence interval estimate for \(\hat{\psi}\)}
 
 Under the frequentist framework, maximum likelihood estimation (MLE) yielded a vaccine efficacy estimate of 95.0617\% (95\% confidence interval [CI]: 94.7929\%,0.953306\%).
 
-```{r likelihood_function_plot, echo = F}
+```{r likelihood_function_plot, fig.width=4, fig.height=3, echo=FALSE, fig.align="center"}
 psi_lik <- function(x){
   return(choose(170,8)*((x-1)/(x-2))^8*(-1/(x-2))^162)
 }
@@ -398,34 +392,6 @@ Upper (97.5\%) & `r round(result[2],4)` \\
 \subsubsection*{Bayesian Results}
 
 
-```{r, echo=FALSE}
-ggplot() +
-  geom_function(fun = psi_dist,
-                mapping = aes(color = "Pfizer"),
-                args = list(shape1 = 0.700102, shape2 = 1),
-                xlim = c(0, 1)) +
-  geom_function(fun = psi_dist,
-                mapping = aes(color = "prior1"),
-                args = list(shape1 = 43.04, shape2 = 43.04),
-                xlim = c(0, 1)) +
-  geom_function(fun = psi_dist,
-                mapping = aes(color = "prior2"),
-                args = list(shape1 = 85.63, shape2 = 85.63),
-                xlim = c(0, 1)) +
-  scale_color_manual(name = "dist", 
-                     values = c("Pfizer" = "blue", "prior1" = "red", "prior2" = "black")) +
-  labs(title = "Prior Distributions", x = expression(pi), y = "PDF")
-```
-\begin{figure}[h]
-\centering
-% (Placeholder for your posted code that generates prior-compare plot)
-\caption{Comparison of the three priors (Pfizer, 0.05, 0.01)}
-\label{fig:prior-compare}
-\end{figure}
-
-
-\noindent \textbf{Prior and Posterior Distributions.}
-Figure 1 compares the initial priors for the Pfizer analysis (Beta$(0.700102,1)$) and our two alternative priors (Beta$(43.04,43.04)$ and Beta$(85.63,85.63)$). As shown, the Pfizer prior places more mass toward large values of $\psi$, whereas the alternative priors are more tightly concentrated around $\psi=0.25$. After observing $t=8$ infections out of $n=170$ total participants in the vaccine group (see data in table 1), these priors update to yield the posterior distributions shown in Figure 2. 
 
 ```{r, echo = FALSE}
 library(LearnBayes)
@@ -435,7 +401,7 @@ prior2Beta <- beta.select(quantile1 = list(p=0.01, x = 7/17),
             quantile2 = list(p = 0.5, x = 0.5))
 ```
 
-```{r , echo = FALSE}
+```{r fig.width=4, fig.height=3, echo=FALSE, fig.align="center"}
 
 ggplot() +
 geom_function(fun = psi_dist,
@@ -464,7 +430,7 @@ args = list(shape1 = 85.63 + 8, shape2 = 162 + 85.63),
 xlim=c(0,1)) +
 scale_color_manual(name = "dist", 
                    values = c("Pfizer" = "blue", "0.05" = "red", "0.01" = "black"))+
-labs(title = "Priors and Posteriors",
+labs(title = "Prior and Posterior Distributions",
 x=expression(pi),
 y = "PDF")
 
@@ -601,8 +567,6 @@ The bootstrap analysis yielded a 95\% confidence interval for $\hat{\psi}$ that 
 
 Comparing the bootstrap interval to Pfizer’s interval, we observe that both suggest a high probability that vaccine efficacy exceeds the 30\% benchmark. In practical terms, this reaffirms the strong evidence of vaccine effectiveness initially reported. Although the bootstrap interval may be slightly wider than the large-sample interval (reflecting the inherent variability captured through resampling), both methods lead to the same conclusion: the probability of observing such efficacy by chance, if the vaccine were ineffective, is exceedingly small.
 
-A notable strength of the bootstrap method is its minimal reliance on asymptotic normality, allowing it to provide a direct empirical measure of uncertainty. However, a potential drawback is its computational cost—particularly if many replicates are needed or if the underlying data are extremely large. Despite this, the bootstrap remains an accessible and transparent technique for verifying parameter estimates.
-
 Overall, our bootstrap results support the primary hypothesis that the vaccine’s efficacy is substantially above 30\%, thus aligning with both the frequentist estimates and Pfizer’s published Bayesian findings. This convergence of evidence across multiple analytic strategies enhances confidence in the robustness of our conclusions regarding BNT162b2 efficacy.
 
 
@@ -657,6 +621,26 @@ psi_transform <- function(pi_val) {
 
 
 ## Plots
+
+```{r, echo=FALSE}
+ggplot() +
+  geom_function(fun = psi_dist,
+                mapping = aes(color = "Pfizer"),
+                args = list(shape1 = 0.700102, shape2 = 1),
+                xlim = c(0, 1)) +
+  geom_function(fun = psi_dist,
+                mapping = aes(color = "prior1"),
+                args = list(shape1 = 43.04, shape2 = 43.04),
+                xlim = c(0, 1)) +
+  geom_function(fun = psi_dist,
+                mapping = aes(color = "prior2"),
+                args = list(shape1 = 85.63, shape2 = 85.63),
+                xlim = c(0, 1)) +
+  scale_color_manual(name = "dist", 
+                     values = c("Pfizer" = "blue", "prior1" = "red", "prior2" = "black")) +
+  labs(title = "Prior Distributions", x = expression(pi), y = "PDF")
+```
+
 ```{r, echo = FALSE}
 
 ggplot() +
